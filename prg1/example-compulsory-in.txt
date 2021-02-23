@@ -1,0 +1,15 @@
+clear_all
+place_count
+read "example-places.txt"
+place_count
+place_name_type 10
+place_coord 4
+places_alphabetically
+places_coord_order
+find_places_type firepit
+change_place_name 20 'Nuotiopaikka'
+find_places_name 'Nuotiopaikka'
+read "example-areas.txt"
+all_areas
+area_name 99
+subarea_in_areas 98
