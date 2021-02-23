@@ -1021,7 +1021,7 @@ string const wsx = "[[:space:]]+";
 vector<MainProgram::CmdInfo> MainProgram::cmds_ =
 {
     {"add_place", "ID 'Name' Type (x,y)", plcidx+wsx+namex+wsx+typex+wsx+coordx, &MainProgram::cmd_add_place, nullptr },
-    {"random_add", "number_of_places_to_add  (minx,miny) (maxx,maxy) (coordinates optional)", numx+"(?:"+wsx+coordx+wsx+coordx+")?",
+    {"random_add", "number_of_places_to_add  [(minx,miny) (maxx,maxy)] (coordinates optional)", numx+"(?:"+wsx+coordx+wsx+coordx+")?",
      &MainProgram::cmd_random_add, &MainProgram::test_random_add },
     {"all_places", "", "", &MainProgram::cmd_all_places, nullptr },
     {"place_name_type", "ID", plcidx, &MainProgram::cmd_place_name_type, &MainProgram::test_place_name_type },
@@ -1035,7 +1035,7 @@ vector<MainProgram::CmdInfo> MainProgram::cmds_ =
     {"clear_all", "", "", &MainProgram::cmd_clear_all, nullptr },
     {"places_alphabetically", "", "", &MainProgram::NoParPlaceListCmd<&Datastructures::places_alphabetically>, &MainProgram::NoParPlaceListTestCmd<&Datastructures::places_alphabetically> },
     {"places_coord_order", "", "", &MainProgram::NoParPlaceListCmd<&Datastructures::places_coord_order>, &MainProgram::NoParPlaceListTestCmd<&Datastructures::places_coord_order> },
-    {"places_closest_to", "Coord [type]", coordx+"(?:"+wsx+typex+")?", &MainProgram::cmd_places_closest_to, &MainProgram::test_places_closest_to },
+    {"places_closest_to", "Coord [type] (type optional)", coordx+"(?:"+wsx+typex+")?", &MainProgram::cmd_places_closest_to, &MainProgram::test_places_closest_to },
     {"common_area_of_subareas", "ID1 ID2", plcidx+wsx+plcidx, &MainProgram::cmd_common_area_of_subareas, &MainProgram::test_common_area_of_subareas },
     {"remove_place", "ID", plcidx, &MainProgram::cmd_remove_place, &MainProgram::test_remove_place },
     {"find_places_name", "name", namex, &MainProgram::cmd_find_places_name, &MainProgram::test_find_places_name },
@@ -1049,9 +1049,9 @@ vector<MainProgram::CmdInfo> MainProgram::cmds_ =
     {"help", "", "", &MainProgram::help_command, nullptr },
     {"read", "\"in-filename\"", "\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_read, nullptr },
     {"testread", "\"in-filename\" \"out-filename\"", "\"([-a-zA-Z0-9 ./:_]+)\""+wsx+"\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_testread, nullptr },
-    {"perftest", "cmd1/all/compulsory[;cmd2;cmd3...] timeout repeat_count n1[;n2;n3...] (parts in [] are optional)",
+    {"perftest", "cmd1|all|compulsory[;cmd2...] timeout repeat_count n1[;n2...] (parts in [] are optional, alternatives separated by |)",
      "([0-9a-zA-Z_]+(?:;[0-9a-zA-Z_]+)*)"+wsx+numx+wsx+numx+wsx+"([0-9]+(?:;[0-9]+)*)", &MainProgram::cmd_perftest, nullptr },
-    {"stopwatch", "on/off/next (one of these)", "(?:(on)|(off)|(next))", &MainProgram::cmd_stopwatch, nullptr },
+    {"stopwatch", "on|off|next (alternatives separated by |)", "(?:(on)|(off)|(next))", &MainProgram::cmd_stopwatch, nullptr },
     {"random_seed", "new-random-seed-integer", numx, &MainProgram::cmd_randseed, nullptr },
     {"#", "comment text", ".*", &MainProgram::cmd_comment, nullptr },
 };
