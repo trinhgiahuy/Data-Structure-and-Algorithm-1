@@ -411,6 +411,7 @@ MainProgram::CmdResult MainProgram::cmd_all_subareas_in_area(std::ostream &outpu
     print_area(id, output);
 
     auto result = ds_.all_subareas_in_area(id);
+    sort(result.begin(), result.end());
     if (result.empty()) { output << "No subareas found." << endl; }
     return {ResultType::AREAIDLIST, result};
 }
@@ -528,17 +529,18 @@ void MainProgram::add_random_places_areas(unsigned int size, Coord min, Coord ma
         // Add a new area for every 10 places
         if (random_places_added_ % 10 == 0)
         {
-            auto areaid = random_places_added_ / 10;
+            auto areaid = n_to_areaid(random_places_added_ / 10);
             vector<Coord> coords;
             for (int j=0; j<3; ++j)
             {
                 coords.push_back({random<int>(min.x, max.x),random<int>(min.y, max.y)});
             }
             ds_.add_area(areaid, convert_to_string(areaid), std::move(coords));
-            // Add area as subarea for some earlier area
+            // Add area as subarea so that we get a binary tree
             if (random_places_added_/10 > 0)
             {
-                auto parentid = random<decltype(random_places_added_)>(0, random_places_added_/10);
+//                auto parentid = random<decltype(random_places_added_)>(0, random_places_added_/10);
+                auto parentid = n_to_areaid(random_places_added_ / 10 / 2);
                 ds_.add_subarea_to_area(areaid, parentid);
             }
         }

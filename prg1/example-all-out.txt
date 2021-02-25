@@ -96,9 +96,9 @@ Area hierarchy for area Luoto: id=98
 ** End of commands from 'example-compulsory-in.txt'
 > all_subareas_in_area 123
 All subareas of Metsa: id=123
-1. Vesijarvi: id=99
-2. Lampi: id=78
-3. Luoto: id=98
+1. Lampi: id=78
+2. Luoto: id=98
+3. Vesijarvi: id=99
 > places_closest_to (0,0) firepit
 1. Nuotiopaikka (firepit): pos=(0,7), id=4
 2. Nuotiopaikka (firepit): pos=(11,1), id=20
