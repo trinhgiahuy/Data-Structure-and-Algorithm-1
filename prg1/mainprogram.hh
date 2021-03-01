@@ -59,6 +59,7 @@ private:
     unsigned long int prime1_ = 0; // Will be initialized to random value from above
     unsigned long int prime2_ = 0; // Will be initialized to random value from above
     unsigned long int random_places_added_ = 0; // Counter for random stops added
+    unsigned long int random_areas_added_ = 0; // Counter for random stops added
     unsigned long int random_ways_added_ = 0; // Counter for random routes added
     void init_primes();
     Name n_to_name(unsigned long int n);

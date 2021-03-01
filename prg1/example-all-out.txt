@@ -89,9 +89,8 @@ Area ID 99 has name 'Vesijarvi'
 Vesijarvi: id=99
 > subarea_in_areas 98
 Area hierarchy for area Luoto: id=98
-1. Luoto: id=98
-2. Vesijarvi: id=99
-3. Metsa: id=123
+1. Vesijarvi: id=99
+2. Metsa: id=123
 > 
 ** End of commands from 'example-compulsory-in.txt'
 > all_subareas_in_area 123

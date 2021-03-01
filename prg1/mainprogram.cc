@@ -257,9 +257,9 @@ MainProgram::CmdResult MainProgram::cmd_area_name(std::ostream &output, MainProg
 
 void MainProgram::test_area_name()
 {
-    if (random_places_added_ > 0)
+    if (random_areas_added_ > 0)
     {
-        auto id = n_to_areaid(random<decltype(random_places_added_)>(0, (random_places_added_-1)/10+1));
+        auto id = n_to_areaid(random<decltype(random_areas_added_)>(0, random_areas_added_));
         ds_.get_area_name(id);
     }
 }
@@ -393,9 +393,9 @@ MainProgram::CmdResult MainProgram::cmd_subarea_in_areas(std::ostream& output, M
 
 void MainProgram::test_subarea_in_areas()
 {
-    if (random_places_added_ > 0) // Don't do anything if there's no places
+    if (random_areas_added_ > 0) // Don't do anything if there's no places
     {
-        auto id = n_to_areaid(random<decltype(random_places_added_)>(0, (random_places_added_-1)/10+1));
+        auto id = n_to_areaid(random<decltype(random_areas_added_)>(0, random_areas_added_));
         ds_.subarea_in_areas(id);
     }
 }
@@ -418,9 +418,9 @@ MainProgram::CmdResult MainProgram::cmd_all_subareas_in_area(std::ostream &outpu
 
 void MainProgram::test_all_subareas_in_area()
 {
-    if (random_places_added_ > 0) // Don't do anything if there's no places
+    if (random_areas_added_ > 0) // Don't do anything if there's no places
     {
-        auto id = n_to_areaid(random<decltype(random_places_added_)>(0, (random_places_added_-1)/10+1));
+        auto id = n_to_areaid(random<decltype(random_areas_added_)>(0, random_areas_added_));
         ds_.all_subareas_in_area(id);
     }
 }
@@ -475,10 +475,10 @@ MainProgram::CmdResult MainProgram::cmd_common_area_of_subareas(std::ostream &ou
 
 void MainProgram::test_common_area_of_subareas()
 {
-    if (random_places_added_ > 0) // Don't do anything if there's no places
+    if (random_areas_added_ > 0) // Don't do anything if there's no places
     {
-        auto id1 = n_to_areaid(random<decltype(random_places_added_)>(0, (random_places_added_-1)/10+1));
-        auto id2 = n_to_areaid(random<decltype(random_places_added_)>(0, (random_places_added_-1)/10+1));
+        auto id1 = n_to_areaid(random<decltype(random_areas_added_)>(0, random_areas_added_));
+        auto id2 = n_to_areaid(random<decltype(random_areas_added_)>(0, random_areas_added_));
         ds_.common_area_of_subareas(id1, id2);
     }
 }
@@ -529,7 +529,7 @@ void MainProgram::add_random_places_areas(unsigned int size, Coord min, Coord ma
         // Add a new area for every 10 places
         if (random_places_added_ % 10 == 0)
         {
-            auto areaid = n_to_areaid(random_places_added_ / 10);
+            auto areaid = n_to_areaid(random_areas_added_);
             vector<Coord> coords;
             for (int j=0; j<3; ++j)
             {
@@ -537,12 +537,13 @@ void MainProgram::add_random_places_areas(unsigned int size, Coord min, Coord ma
             }
             ds_.add_area(areaid, convert_to_string(areaid), std::move(coords));
             // Add area as subarea so that we get a binary tree
-            if (random_places_added_/10 > 0)
+            if (random_areas_added_ > 0)
             {
-//                auto parentid = random<decltype(random_places_added_)>(0, random_places_added_/10);
-                auto parentid = n_to_areaid(random_places_added_ / 10 / 2);
+//                auto parentid = random<decltype(random_areas_added_)>(0, random_areas_added_);
+                auto parentid = n_to_areaid(random_areas_added_ / 2);
                 ds_.add_subarea_to_area(areaid, parentid);
             }
+            ++random_areas_added_;
         }
 
         ++random_places_added_;
@@ -1215,7 +1216,10 @@ MainProgram::CmdResult MainProgram::cmd_perftest(std::ostream& output, MatchIter
                     PlaceID id = random<decltype(random_places_added_)>(0, random_places_added_);
                     ds_.get_place_name_type(id);
                     ds_.get_place_coord(id);
-                    auto areaid = n_to_areaid(random<decltype(random_places_added_)>(0, (random_places_added_-1)/10+1));
+                }
+                if (random_areas_added_ > 0)
+                {
+                    auto areaid = n_to_areaid(random<decltype(random_areas_added_)>(0, random_areas_added_));
                     ds_.get_area_name(areaid);
                 }
             }
@@ -1645,6 +1649,7 @@ void MainProgram::init_primes()
     prime1_ = primes1[random<int>(0, primes1.size())];
     prime2_ = primes2[random<int>(0, primes2.size())];
     random_places_added_ = 0;
+    random_areas_added_ = 0;
     random_ways_added_ = 0;
 }
 
