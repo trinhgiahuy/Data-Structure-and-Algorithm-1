@@ -1,0 +1,27 @@
+# VERY simple basic test of all (compulsory+non-compulsory) commands
+# Test all compulsory commands
+read "simpletest-compulsory-in.txt"
+# Test non-compulsory commands
+add_area 3 'Area 3' (2,2) (3,2) (2,3)
+add_subarea_to_area 3 2
+all_subareas_in_area 1
+all_subareas_in_area 2
+all_subareas_in_area 3
+places_closest_to (0,0)
+places_closest_to (0,0) shelter
+add_place 33333333 'Three' firepit (3,3)
+add_place 44444444 'Four' shelter (4,4)
+places_closest_to (0,0)
+places_closest_to (0,0) shelter
+remove_place 33333333
+find_places_name 'Three'
+places_alphabetically
+places_coord_order
+place_count
+add_area 4 'Area 4' (4,4) (3,4) (4,3)
+add_subarea_to_area 4 2
+common_area_of_subareas 3 4
+add_area 5 'Area 5' (1,8) (2,8) (1,9)
+common_area_of_subareas 5 4
+add_subarea_to_area 5 1
+common_area_of_subareas 5 4

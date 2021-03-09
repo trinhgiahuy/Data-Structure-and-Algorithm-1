@@ -1,0 +1,154 @@
+> # VERY simple basic test of all (compulsory+non-compulsory) commands
+> # Test all compulsory commands
+> read "simpletest-compulsory-in.txt"
+** Commands from 'simpletest-compulsory-in.txt'
+> # VERY simple basic test of all compulsory commands
+> # Clear the data structures and check that place count is zero
+> clear_all
+Cleared everything.
+> place_count
+Number of places: 0
+> # Test compulsory commands with empty data
+> all_places
+No places!
+> all_areas
+No areas!
+> places_coord_order
+No Places!
+> places_alphabetically
+No Places!
+> find_places_name 'Noplace'
+No Places!
+> find_places_type firepit
+No Places!
+> # Add one place and test commands
+> add_place 11111111 'One' shelter (1,1)
+One (shelter): pos=(1,1), id=11111111
+> place_count
+Number of places: 1
+> all_places
+One (shelter): pos=(1,1), id=11111111
+> places_coord_order
+One (shelter): pos=(1,1), id=11111111
+> places_alphabetically
+One (shelter): pos=(1,1), id=11111111
+> find_places_name 'One'
+One (shelter): pos=(1,1), id=11111111
+> find_places_type shelter
+One (shelter): pos=(1,1), id=11111111
+> change_place_name 11111111 'Yksi'
+Yksi (shelter): pos=(1,1), id=11111111
+> find_places_name 'Yksi'
+Yksi (shelter): pos=(1,1), id=11111111
+> find_places_name 'One'
+No Places!
+> # Add another place, test more commands
+> add_place 22222222 'Two' firepit (2,2)
+Two (firepit): pos=(2,2), id=22222222
+> all_places
+1. Yksi (shelter): pos=(1,1), id=11111111
+2. Two (firepit): pos=(2,2), id=22222222
+> places_alphabetically
+1. Two (firepit): pos=(2,2), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+> places_coord_order
+1. Yksi (shelter): pos=(1,1), id=11111111
+2. Two (firepit): pos=(2,2), id=22222222
+> find_places_type shelter
+Yksi (shelter): pos=(1,1), id=11111111
+> find_places_type firepit
+Two (firepit): pos=(2,2), id=22222222
+> change_place_coord 22222222 (0,0)
+Two (firepit): pos=(0,0), id=22222222
+> places_coord_order
+1. Two (firepit): pos=(0,0), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+> # Add one area and test commands
+> add_area 1 'Area' (0,0) (10,0) (0,10)
+Area: Area: id=1
+> all_areas
+Area: id=1
+> area_name 1
+Area ID 1 has name 'Area'
+Area: id=1
+> subarea_in_areas 1
+Area hierarchy for area Area: id=1
+Area is not a subarea of any area.
+> # And another area as subarea
+> add_area 2 'Area 2' (1,1) (7,1) (1,7)
+Area: Area 2: id=2
+> add_subarea_to_area 2 1
+Added subarea Area 2 to area Area
+> all_areas
+1. Area: id=1
+2. Area 2: id=2
+> subarea_in_areas 1
+Area hierarchy for area Area: id=1
+Area is not a subarea of any area.
+> subarea_in_areas 2
+Area hierarchy for area Area 2: id=2
+Area: id=1
+> quit
+** End of commands from 'simpletest-compulsory-in.txt'
+> # Test non-compulsory commands
+> add_area 3 'Area 3' (2,2) (3,2) (2,3)
+Area: Area 3: id=3
+> add_subarea_to_area 3 2
+Added subarea Area 3 to area Area 2
+> all_subareas_in_area 1
+All subareas of Area: id=1
+1. Area 2: id=2
+2. Area 3: id=3
+> all_subareas_in_area 2
+All subareas of Area 2: id=2
+Area 3: id=3
+> all_subareas_in_area 3
+All subareas of Area 3: id=3
+No subareas found.
+> places_closest_to (0,0)
+1. Two (firepit): pos=(0,0), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+> places_closest_to (0,0) shelter
+Yksi (shelter): pos=(1,1), id=11111111
+> add_place 33333333 'Three' firepit (3,3)
+Three (firepit): pos=(3,3), id=33333333
+> add_place 44444444 'Four' shelter (4,4)
+Four (shelter): pos=(4,4), id=44444444
+> places_closest_to (0,0)
+1. Two (firepit): pos=(0,0), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+3. Three (firepit): pos=(3,3), id=33333333
+> places_closest_to (0,0) shelter
+1. Yksi (shelter): pos=(1,1), id=11111111
+2. Four (shelter): pos=(4,4), id=44444444
+> remove_place 33333333
+Place Three(firepit) removed.
+> find_places_name 'Three'
+No Places!
+> places_alphabetically
+1. Four (shelter): pos=(4,4), id=44444444
+2. Two (firepit): pos=(0,0), id=22222222
+3. Yksi (shelter): pos=(1,1), id=11111111
+> places_coord_order
+1. Two (firepit): pos=(0,0), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+3. Four (shelter): pos=(4,4), id=44444444
+> place_count
+Number of places: 3
+> add_area 4 'Area 4' (4,4) (3,4) (4,3)
+Area: Area 4: id=4
+> add_subarea_to_area 4 2
+Added subarea Area 4 to area Area 2
+> common_area_of_subareas 3 4
+Common area of areas Area 3: id=3 and Area 4: id=4 is:
+Area 2: id=2
+> add_area 5 'Area 5' (1,8) (2,8) (1,9)
+Area: Area 5: id=5
+> common_area_of_subareas 5 4
+No common area found!
+> add_subarea_to_area 5 1
+Added subarea Area 5 to area Area
+> common_area_of_subareas 5 4
+Common area of areas Area 5: id=5 and Area 4: id=4 is:
+Area: id=1
+> 

@@ -58,8 +58,8 @@ private:
     static std::array<unsigned long int, 20> const primes2;
     unsigned long int prime1_ = 0; // Will be initialized to random value from above
     unsigned long int prime2_ = 0; // Will be initialized to random value from above
-    unsigned long int random_places_added_ = 0; // Counter for random stops added
-    unsigned long int random_areas_added_ = 0; // Counter for random stops added
+    unsigned long int random_places_added_ = 0; // Counter for random places added
+    unsigned long int random_areas_added_ = 0; // Counter for random areas added
     unsigned long int random_ways_added_ = 0; // Counter for random routes added
     void init_primes();
     Name n_to_name(unsigned long int n);
@@ -226,7 +226,7 @@ MainProgram::CmdResult MainProgram::NoParPlaceListCmd(std::ostream& output, Matc
     auto result = (ds_.*MFUNC)();
     if (result.empty())
     {
-        output << "No stops!" << std::endl;
+        output << "No Places!" << std::endl;
     }
     return {ResultType::PLACEIDLIST, MainProgram::CmdResultPlaceIDs{NO_AREA, result}};
 }

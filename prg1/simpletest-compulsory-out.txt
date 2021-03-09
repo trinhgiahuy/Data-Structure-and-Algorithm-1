@@ -1,0 +1,87 @@
+> # VERY simple basic test of all compulsory commands
+> # Clear the data structures and check that place count is zero
+> clear_all
+Cleared everything.
+> place_count
+Number of places: 0
+> # Test compulsory commands with empty data
+> all_places
+No places!
+> all_areas
+No areas!
+> places_coord_order
+No Places!
+> places_alphabetically
+No Places!
+> find_places_name 'Noplace'
+No Places!
+> find_places_type firepit
+No Places!
+> # Add one place and test commands
+> add_place 11111111 'One' shelter (1,1)
+One (shelter): pos=(1,1), id=11111111
+> place_count
+Number of places: 1
+> all_places
+One (shelter): pos=(1,1), id=11111111
+> places_coord_order
+One (shelter): pos=(1,1), id=11111111
+> places_alphabetically
+One (shelter): pos=(1,1), id=11111111
+> find_places_name 'One'
+One (shelter): pos=(1,1), id=11111111
+> find_places_type shelter
+One (shelter): pos=(1,1), id=11111111
+> change_place_name 11111111 'Yksi'
+Yksi (shelter): pos=(1,1), id=11111111
+> find_places_name 'Yksi'
+Yksi (shelter): pos=(1,1), id=11111111
+> find_places_name 'One'
+No Places!
+> # Add another place, test more commands
+> add_place 22222222 'Two' firepit (2,2)
+Two (firepit): pos=(2,2), id=22222222
+> all_places
+1. Yksi (shelter): pos=(1,1), id=11111111
+2. Two (firepit): pos=(2,2), id=22222222
+> places_alphabetically
+1. Two (firepit): pos=(2,2), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+> places_coord_order
+1. Yksi (shelter): pos=(1,1), id=11111111
+2. Two (firepit): pos=(2,2), id=22222222
+> find_places_type shelter
+Yksi (shelter): pos=(1,1), id=11111111
+> find_places_type firepit
+Two (firepit): pos=(2,2), id=22222222
+> change_place_coord 22222222 (0,0)
+Two (firepit): pos=(0,0), id=22222222
+> places_coord_order
+1. Two (firepit): pos=(0,0), id=22222222
+2. Yksi (shelter): pos=(1,1), id=11111111
+> # Add one area and test commands
+> add_area 1 'Area' (0,0) (10,0) (0,10)
+Area: Area: id=1
+> all_areas
+Area: id=1
+> area_name 1
+Area ID 1 has name 'Area'
+Area: id=1
+> subarea_in_areas 1
+Area hierarchy for area Area: id=1
+Area is not a subarea of any area.
+> # And another area as subarea
+> add_area 2 'Area 2' (1,1) (7,1) (1,7)
+Area: Area 2: id=2
+> add_subarea_to_area 2 1
+Added subarea Area 2 to area Area
+> all_areas
+1. Area: id=1
+2. Area 2: id=2
+> subarea_in_areas 1
+Area hierarchy for area Area: id=1
+Area is not a subarea of any area.
+> subarea_in_areas 2
+Area hierarchy for area Area 2: id=2
+Area: id=1
+> quit

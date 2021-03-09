@@ -279,6 +279,10 @@ MainProgram::CmdResult MainProgram::cmd_area_coords(std::ostream &output, MainPr
         return {};
     }
 
+    if (coords.size() == 1 && coords.front() == NO_COORD)
+    {
+        return {ResultType::AREAIDLIST, MainProgram::CmdResultAreaIDs{NO_AREA}};
+    }
 
     output << "Area "; print_area(id,output,false); output << " has coords:" << endl;
     std::for_each(coords.begin(), coords.end(), [&output,this](auto const& coord){ print_coord(coord,output); });
@@ -467,6 +471,7 @@ MainProgram::CmdResult MainProgram::cmd_common_area_of_subareas(std::ostream &ou
     if (result == NO_AREA)
     {
         output << "No common area found!" << endl;
+        return {};
     }
 
     output << "Common area of areas "; print_area(id1, output, false); output << " and "; print_area(id2, output, false); output << " is:" << endl;
@@ -962,12 +967,16 @@ std::string MainProgram::print_coord(Coord coord, std::ostream& output, bool nl)
     }
 }
 
-MainProgram::CmdResult MainProgram::cmd_find_places_name(std::ostream& /*output*/, MatchIter begin, MatchIter end)
+MainProgram::CmdResult MainProgram::cmd_find_places_name(std::ostream& output, MatchIter begin, MatchIter end)
 {
     string name = *begin++;
     assert( begin == end && "Impossible number of parameters!");
 
     auto result = ds_.find_places_name(name);
+    if (result.empty())
+    {
+        output << "No Places!" << std::endl;
+    }
 
     sort(result.begin(), result.end());
     return {ResultType::PLACEIDLIST, CmdResultPlaceIDs{NO_AREA, result}};
@@ -996,6 +1005,10 @@ MainProgram::CmdResult MainProgram::cmd_find_places_type(std::ostream &output, M
     }
 
     auto result = ds_.find_places_type(type);
+    if (result.empty())
+    {
+        output << "No Places!" << std::endl;
+    }
 
     sort(result.begin(), result.end());
     return {ResultType::PLACEIDLIST, CmdResultPlaceIDs{NO_AREA, result}};
@@ -1041,9 +1054,9 @@ vector<MainProgram::CmdInfo> MainProgram::cmds_ =
     {"places_closest_to", "Coord [type] (type optional)", coordx+"(?:"+wsx+typex+")?", &MainProgram::cmd_places_closest_to, &MainProgram::test_places_closest_to },
     {"common_area_of_subareas", "ID1 ID2", plcidx+wsx+plcidx, &MainProgram::cmd_common_area_of_subareas, &MainProgram::test_common_area_of_subareas },
     {"remove_place", "ID", plcidx, &MainProgram::cmd_remove_place, &MainProgram::test_remove_place },
-    {"find_places_name", "name", namex, &MainProgram::cmd_find_places_name, &MainProgram::test_find_places_name },
+    {"find_places_name", "'Name'", namex, &MainProgram::cmd_find_places_name, &MainProgram::test_find_places_name },
     {"find_places_type", "type", typex, &MainProgram::cmd_find_places_type, &MainProgram::test_find_places_type },
-    {"change_place_name", "ID newname", plcidx+wsx+namex, &MainProgram::cmd_change_place_name, &MainProgram::test_change_place_name },
+    {"change_place_name", "ID 'Newname'", plcidx+wsx+namex, &MainProgram::cmd_change_place_name, &MainProgram::test_change_place_name },
     {"change_place_coord", "ID (x,y)", plcidx+wsx+coordx, &MainProgram::cmd_change_place_coord, &MainProgram::test_change_place_coord },
     {"add_subarea_to_area", "SubareaID AreaID", areaidx+wsx+areaidx, &MainProgram::cmd_add_subarea_to_area, nullptr },
     {"subarea_in_areas", "AreaID", areaidx, &MainProgram::cmd_subarea_in_areas, &MainProgram::test_subarea_in_areas },
