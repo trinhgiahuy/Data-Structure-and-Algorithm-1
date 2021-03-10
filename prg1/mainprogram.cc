@@ -634,13 +634,24 @@ MainProgram::CmdResult MainProgram::cmd_randseed(std::ostream& output, MatchIter
 MainProgram::CmdResult MainProgram::cmd_read(std::ostream& output, MatchIter begin, MatchIter end)
 {
     string filename = *begin++;
+    string silentstr =  *begin++;
     assert( begin == end && "Impossible number of parameters!");
+
+    bool silent = !silentstr.empty();
+    ostream* new_output = &output;
+
+    ostringstream dummystr; // Given as output if "silent" is specified, the output is discarded
+    if (silent)
+    {
+        new_output = &dummystr;
+    }
 
     ifstream input(filename);
     if (input)
     {
         output << "** Commands from '" << filename << "'" << endl;
-        command_parser(input, output, PromptStyle::NORMAL);
+        command_parser(input, *new_output, PromptStyle::NORMAL);
+        if (silent) { output << "...(output discarded in silent mode)..." << endl; }
         output << "** End of commands from '" << filename << "'" << endl;
     }
     else
@@ -1063,7 +1074,7 @@ vector<MainProgram::CmdInfo> MainProgram::cmds_ =
     {"all_subareas_in_area", "AreaID", areaidx, &MainProgram::cmd_all_subareas_in_area, &MainProgram::test_all_subareas_in_area },
     {"quit", "", "", nullptr, nullptr },
     {"help", "", "", &MainProgram::help_command, nullptr },
-    {"read", "\"in-filename\"", "\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_read, nullptr },
+    {"read", "\"in-filename\" [silent]", "\"([-a-zA-Z0-9 ./:_]+)\"(?:"+wsx+"(silent))?", &MainProgram::cmd_read, nullptr },
     {"testread", "\"in-filename\" \"out-filename\"", "\"([-a-zA-Z0-9 ./:_]+)\""+wsx+"\"([-a-zA-Z0-9 ./:_]+)\"", &MainProgram::cmd_testread, nullptr },
     {"perftest", "cmd1|all|compulsory[;cmd2...] timeout repeat_count n1[;n2...] (parts in [] are optional, alternatives separated by |)",
      "([0-9a-zA-Z_]+(?:;[0-9a-zA-Z_]+)*)"+wsx+numx+wsx+numx+wsx+"([0-9]+(?:;[0-9]+)*)", &MainProgram::cmd_perftest, nullptr },

@@ -9,6 +9,5 @@ common_area_of_subareas 150817442 150817444
 find_places_name 'pulesjarvi'
 remove_place 7012530993
 find_places_name 'pulesjarvi'
-places_alphabetically
 places_coord_order
 places_closest_to (471,422)
