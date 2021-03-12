@@ -1,0 +1,3 @@
+# Test the performance of finding places
+perftest find_places_name 20 5000 10;30;100;300;1000;3000;10000;30000;100000;300000;1000000
+perftest find_places_type 20 5000 10;30;100;300;1000;3000;10000;30000;100000;300000;1000000

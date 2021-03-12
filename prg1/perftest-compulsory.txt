@@ -1,0 +1,6 @@
+# Read performance tests of compulsory operations
+read "perftest-access.txt"
+read "perftest-sorting.txt"
+read "perftest-change.txt"
+read "perftest-find_places.txt"
+read "perftest-subareas.txt"
