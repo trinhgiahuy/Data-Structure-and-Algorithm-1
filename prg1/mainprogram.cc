@@ -222,6 +222,12 @@ MainProgram::CmdResult MainProgram::cmd_add_area(std::ostream& output, MainProgr
         coords.push_back({convert_string_to<int>(coord[1]),convert_string_to<int>(coord[2])});
     }
 
+    if (coords.size() < 3)
+    {
+        output << "An area must have at least 3 coords, only " << coords.size() << " coords given!" << endl;
+        return {};
+    }
+
     bool success = ds_.add_area(id, name, coords);
 
     if (success)
