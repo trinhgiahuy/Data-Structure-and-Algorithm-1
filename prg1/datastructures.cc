@@ -64,28 +64,23 @@ long long int Datastructures::distance_square(const Coord& xy1,
 }
 Datastructures::Datastructures()
 {
-    // Replace this comment with your implementation
     id_data = {};
     area_data = {};
 }
 
-
 Datastructures::~Datastructures()
 {
-    // Replace this comment with your implementation
     clear_all();
 }
 
 int Datastructures::place_count()
 {
-    // Replace this comment with your implementation
     std::size_t size = id_data.size();
     return size;
 }
 
 void Datastructures::clear_all()
 {
-    // Replace this comment with your implementation
     id_data.clear();
     area_data.clear();
 }
@@ -104,8 +99,6 @@ std::vector<PlaceID> Datastructures::all_places()
 
 bool Datastructures::add_place(PlaceID id, const Name& name, PlaceType type, Coord xy)
 {
-    // Replace this comment with your implementation
-    //std::vector<PlaceID>::iterator it;
     if (id_data.find(id) == id_data.end()){
         auto new_place = std::make_shared<Place>(Place{id,name,type,xy});
         id_data.insert({id,new_place});
@@ -148,12 +141,18 @@ Coord Datastructures::get_place_coord(PlaceID id)
 bool Datastructures::add_area(AreaID id, const Name &name, std::vector<Coord> coords)
 {
     // Replace this comment with your implementation
-    if(area_data.find(id) == area_data.end()){
-        auto new_area = std::make_shared<Area>(Area{id,name,coords,NO_AREA,{}});
+    if (area_data.empty()){
+        auto new_area = std::make_shared<Area>(Area{id,name,coords, NO_AREA,{}});
         area_data.insert({id,new_area});
         return true;
     }else{
-        return false;
+        if(area_data.find(id) == area_data.end()){
+            auto new_area = std::make_shared<Area>(Area{id,name,coords, NO_AREA,{}});
+            area_data.insert({id,new_area});
+            return true;
+        }else{
+            return false;
+        }
     }
 }
 
@@ -181,9 +180,7 @@ std::vector<Coord> Datastructures::get_area_coords(AreaID id)
 
 void Datastructures::creation_finished()
 {
-    // Replace this comment with your implementation
-    // NOTE!! It's quite ok to leave this empty, if you don't need operations
-    // that are performed after all additions have been done.
+
 }
 
 
@@ -294,8 +291,7 @@ bool Datastructures::change_place_coord(PlaceID id, Coord newcoord)
 
 std::vector<AreaID> Datastructures::all_areas()
 {
-    // Replace this comment with your implementation
-    std::vector<AreaID> all_areas_vct;
+    std::vector<AreaID>all_areas_vct;
     for (auto area : area_data){
         all_areas_vct.push_back(area.first);
     }
@@ -350,8 +346,6 @@ std::vector<AreaID> Datastructures::subarea_in_areas(AreaID id)
 
 std::vector<PlaceID> Datastructures::places_closest_to(Coord xy, PlaceType type)
 {
-    // Replace this comment with your implementation
-    //if PlaceType
     std::vector<std::pair<PlaceID,long long int>> place_closest;
     place_closest.reserve(3);
 
@@ -426,8 +420,7 @@ bool Datastructures::remove_place(PlaceID id)
 
 std::vector<AreaID> Datastructures::all_subareas_in_area(AreaID id)
 {
-    // Replace this comment with your implementation
-    //all_subareas_vct.clear();
+
     std::vector<AreaID> all_subareas_vct = {};
     std::vector<AreaID> subareas_child_vct_tmp = {};
 
@@ -461,11 +454,6 @@ AreaID Datastructures::common_area_of_subareas(AreaID id1, AreaID id2)
             || area_data.find(id2) == area_data.end()){
         return NO_AREA;
     }
-
-    /*
-    AreaID parent_id1 = area_data.at(id1)->parent_area_id;
-    AreaID parent_id2 = area_data.at(id2)->parent_area_id;
-    */
 
     std::vector<AreaID> all_parent_area_1 = subarea_in_areas(id1);
     std::vector<AreaID> all_parent_area_2 = subarea_in_areas(id2);

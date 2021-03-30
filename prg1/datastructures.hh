@@ -183,12 +183,14 @@ public:
     // takes linear time on average because accessing takes constant time
     std::vector<AreaID> all_areas();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance:O(1)
+    //Short rationale for estimate: The function uses unordered_map::find and
+    // unordered_map::at that take constant time on average.
     bool add_subarea_to_area(AreaID id, AreaID parentid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Worst case O(n)
+    // Short rationale for estimate: The function will go through a vector contains
+    // all its direct and inderict parent area
     std::vector<AreaID> subarea_in_areas(AreaID id);
 
     // Non-compulsory operations
@@ -197,8 +199,10 @@ public:
     // Short rationale for estimate:
     void creation_finished();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate:The function will go through a vector contains
+    // all its direct and inderict children area. The first for loop will go through some
+    // area only
     std::vector<AreaID> all_subareas_in_area(AreaID id);
 
     // Estimate of performance:O(n)
@@ -222,6 +226,8 @@ public:
     // Estimate of performance: O(1).
     // Short rational for estimate: Calculate the square of euclidean distance.
     long long int distance_square(const Coord& xy1,const Coord& xy2);
+
+
 private:
     // Add stuff needed for your class implementation here
     struct Place {
@@ -229,19 +235,21 @@ private:
         Name name;
         PlaceType type;
         Coord coord;
-        //std::vector<PlaceID> sources_;
-        //PlaceID target;
-
-        //bool isSourceSorted;
-
     };
+
+
+    // A unordered map for mapping Place ID with pointer to its
     std::unordered_map<PlaceID, std::shared_ptr<Place>> id_data;
+
+    //Vector that contain all places
     std::vector<PlaceID>all_places_vct;
+    std::vector<AreaID>all_areas_vct;
+
 
     bool isNameSorted;
     bool isCoordSorted;
 
-    //Vector sorted by name that will be return
+    //Vector sorted by name and coordinate that will be return
     std::vector<PlaceID> place_alpha;
     std::vector<PlaceID> place_coord;
 
@@ -249,20 +257,15 @@ private:
     // Name here type string
     struct Area
     {
-        AreaID id = NO_AREA;
+        AreaID id;
         Name name;
         std::vector<Coord> bounds_;
         AreaID parent_area_id;
         std::vector<AreaID> sources_nodes_;
-
-        //std::vector<std::shared_ptr<Area>> sources_nodes_ptr;
     };
 
-    //std::vector<Place>places_struct_vct;
+    // A unordered map for mapping Area ID with pointer to its
     std::unordered_map<AreaID,std::shared_ptr<Area>> area_data;
-    //std::vector<AreaID> all_subareas_vct;
-
-    std::unordered_map<PlaceID,Place> place_list;
 
 };
 
