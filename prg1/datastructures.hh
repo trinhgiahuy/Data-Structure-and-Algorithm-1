@@ -139,8 +139,9 @@ public:
     // and nothing changes, we can just return it
     std::vector<PlaceID> places_alphabetically();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(nlogn), Omega(1)
+    // Short rationale for estimate:std::sort takes O(nlogn). However if we ran this function before
+    // and nothing changes, we can just return it
     std::vector<PlaceID> places_coord_order();
 
     // Estimate of performance:O(n)
@@ -207,7 +208,7 @@ public:
 
     // Estimate of performance:O(n)
     // Short rationale for estimate:The function loops through all the places
-    // to find 3 nearest place to the place considered.s
+    // to find 3 nearest place to the place considered.
     std::vector<PlaceID> places_closest_to(Coord xy, PlaceType type);
 
     // Estimate of performance:Worst case O(n),theta(1)

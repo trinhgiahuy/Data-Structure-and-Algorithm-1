@@ -40,6 +40,7 @@ bool compare_place_name(const std::pair<PlaceID,Name> p1, const std::pair<PlaceI
     return p1.second < p2.second;
 }
 
+/*
 bool compare_place_coord(const std::map<Coord,PlaceID> p1, const std::map<Coord,PlaceID> p2){
 
     for(auto it_1 = p1.begin(),it_2 = p2.begin(); it_1 != p1.end() && it_2 != p2.end(); ++it_1,++it_2 ){
@@ -53,6 +54,8 @@ bool compare_place_coord(const std::map<Coord,PlaceID> p1, const std::map<Coord,
         }
     }
 }
+*/
+
 
 long long int Datastructures::distance_square(const Coord& xy1,
     const Coord& xy2)
