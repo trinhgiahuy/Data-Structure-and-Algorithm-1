@@ -1,0 +1,137 @@
+> read "kintulammi-test-compulsory-in.txt"
+** Commands from 'kintulammi-test-compulsory-in.txt'
+> # Read places and areas just to get the graphics look nice. :)
+> read "kintulammi-places.txt" silent
+** Commands from 'kintulammi-places.txt'
+...(output discarded in silent mode)...
+** End of commands from 'kintulammi-places.txt'
+> read "kintulammi-areas.txt" silent
+** Commands from 'kintulammi-areas.txt'
+...(output discarded in silent mode)...
+** End of commands from 'kintulammi-areas.txt'
+> 
+> # Basic operations
+> clear_ways
+All routes removed.
+> all_ways
+No ways!
+> 
+> # Read the ways
+> read "kintulammi-ways.txt" silent
+** Commands from 'kintulammi-ways.txt'
+...(output discarded in silent mode)...
+** End of commands from 'kintulammi-ways.txt'
+> 
+> # Information about ways
+> ways_from (479,248)
+1. (422,255) way 0x3d 
+2. (493,225) way 0x3e 
+3. (453,319) way 0xb48e23d 
+> way_coords 0x3d
+Way Way id 0x3d has coords:
+(422,255)
+(425,256)
+(435,256)
+(444,257)
+(445,257)
+(447,256)
+(453,254)
+(465,249)
+(468,248)
+(470,248)
+(473,248)
+(477,248)
+(479,248)
+
+> 
+> # Finding a route (a simple case so that there's only one choice)
+> route_any (540,517) (465,487)
+1. (540,517) way 0x124cec17 distance 0
+2. (462,528) way 0x64 distance 96
+3. (478,491) way 0x124cec19 distance 135
+4. (465,487) distance 148
+> quit
+** End of commands from 'kintulammi-test-compulsory-in.txt'
+> 
+> # Test a route with the least crossroads
+> route_least_crossroads (557,242) (420,552)
+1. (557,242) way 0xe distance 0
+2. (557,296) way 0xf distance 55
+3. (552,309) way 0x10 distance 68
+4. (524,337) way 0x11 distance 107
+5. (517,348) way 0x12 distance 120
+6. (508,362) way 0x13 distance 136
+7. (501,372) way 0x14 distance 147
+8. (494,383) way 0x15 distance 160
+9. (485,398) way 0x16 distance 177
+10. (466,428) way 0x17 distance 212
+11. (465,429) way 0x18 distance 213
+12. (459,438) way 0x19 distance 223
+13. (448,447) way 0x1a distance 237
+14. (419,482) way 0x174935d distance 280
+15. (421,491) way 0x2d5059cb distance 289
+16. (422,492) way 0xaa distance 290
+17. (424,496) way 0xab distance 294
+18. (427,501) way 0xac distance 299
+19. (423,524) way 0x2d5059cc distance 322
+20. (420,552) distance 350
+> route_least_crossroads (264,322) (371,338)
+1. (264,322) way 0x2a452033 distance 0
+2. (267,337) way 0x86 distance 15
+3. (271,352) way 0x2a452034 distance 31
+4. (282,355) way 0x2a42c555 distance 42
+5. (285,362) way 0x7a distance 49
+6. (366,362) way 0x70 distance 130
+7. (369,360) way 0x53 distance 133
+8. (371,338) distance 155
+> 
+> # Test the shortest route (from the same coordinates as the last command above!)
+> route_shortest_distance (264,322) (371,338)
+1. (264,322) way 0x22f7b621 distance 0
+2. (266,311) way 0x2a4e62d8 distance 11
+3. (271,313) way 0x2a4e62da distance 16
+4. (272,314) way 0x2a4e62db distance 17
+5. (278,317) way 0x2a4e62dd distance 23
+6. (286,317) way 0xa7 distance 31
+7. (287,317) way 0x2a4e62df distance 32
+8. (297,324) way 0x2a4e62e9 distance 43
+9. (299,326) way 0x2a4e62ea distance 46
+10. (300,326) way 0x2a4e62e8 distance 47
+11. (303,326) way 0x2a4e62e7 distance 50
+12. (315,323) way 0x2a4e62e6 distance 62
+13. (317,322) way 0x2a4e62e5 distance 64
+14. (332,323) way 0x2a4e62e4 distance 79
+15. (334,324) way 0xa9 distance 81
+16. (335,324) way 0x2a4e62e2 distance 82
+17. (336,325) way 0xa8 distance 83
+18. (362,329) way 0x52 distance 110
+19. (371,338) distance 125
+> 
+> ways_from (194,119)
+1. (194,117) way 0x20 
+2. (221,165) way 0x21 
+3. (189,130) way 0x2da97189 
+> # Remove a way to isolate part of the map
+> remove_way 0x21
+Removed way 0x21
+> 
+> # The command below shouldn't find any cycles
+> route_with_cycle (53,254)
+No route found!
+> # If you haven't implemented remove_way above, the command below may found other cycles
+> route_with_cycle (182,42)
+1. (182,42) way 0x29784c5
+2. (232,19) way 0x1c
+3. (209,56) way 0x1d
+4. (208,89) way 0x1e
+5. (207,91) way 0xb5
+6. (207,88) way 0x3348ae73
+7. (206,88) way 0xb7
+8. (210,84) way 0xb6
+9. (207,88)
+> 
+> # If you haven't implemented remove_way above, trimming may produce a network that is
+> # 50 longer (the length of the removed way)
+> trim_ways
+The remaining ways have a total length of 6163
+> 
