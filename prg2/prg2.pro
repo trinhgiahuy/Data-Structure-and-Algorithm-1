@@ -15,7 +15,6 @@
 # so that performance events can be used
 # NOTE 2: If you uncomment or recomment the line, remember to recompile EVERYTHING by selecting
 # "Rebuild all" from the Build menu
-QMAKE_CXXFLAGS += -DUSE_PERF_EVENT
 
 QT       += core gui
 
