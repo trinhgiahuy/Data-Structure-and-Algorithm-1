@@ -585,9 +585,8 @@ void MainProgram::test_ways_from()
 {
  if (random_ways_added_ > 0) // Don't do anything if there's no ways
  {
-     auto x = random<int>(0, 1000);
-     auto y = random<int>(0, 1000);
-     ds_.ways_from({x,y});
+     auto coord = n_to_coord(random(decltype(random_ways_added_)(0),random_ways_added_));
+     ds_.ways_from(coord);
  }
 }
 
