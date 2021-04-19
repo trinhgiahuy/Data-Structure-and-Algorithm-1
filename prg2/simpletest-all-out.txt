@@ -81,14 +81,14 @@ Way Way id Vert has coords:
 > remove_way Hori
 Removed way Hori
 > route_any (0,0) (5,0)
-No route found!
+Starting or destination coord has no ways!
 > route_any (0,0) (0,5)
 1. (0,0) way Vert distance 0
 2. (0,5) distance 6
 > route_any (5,0) (0,0)
-No route found!
+Starting or destination coord has no ways!
 > route_any (5,0) (0,5)
-No route found!
+Starting or destination coord has no ways!
 > # Add more ways and test other routes
 > add_way Hori (0,0) (2,1) (5,0)
 Added way Hori with coords: (0,0) (2,1) (5,0)
