@@ -139,6 +139,7 @@ private:
     CmdResult cmd_route_with_cycle(std::ostream& output, MatchIter begin, MatchIter end);
     CmdResult cmd_trim_ways(std::ostream& output, MatchIter begin, MatchIter end);
     CmdResult cmd_random_add(std::ostream& output, MatchIter begin, MatchIter end);
+    CmdResult cmd_random_ways(std::ostream& output, MatchIter begin, MatchIter end);
     CmdResult cmd_randseed(std::ostream& output, MatchIter begin, MatchIter end);
     CmdResult cmd_read(std::ostream& output, MatchIter begin, MatchIter end);
     CmdResult cmd_testread(std::ostream& output, MatchIter begin, MatchIter end);
@@ -147,6 +148,7 @@ private:
     CmdResult cmd_comment(std::ostream& output, MatchIter begin, MatchIter end);
 
     void test_random_add();
+    void test_random_ways();
     void test_place_name_type();
     void test_place_coord();
     void test_find_places_name();

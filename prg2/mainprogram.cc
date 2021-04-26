@@ -745,9 +745,30 @@ MainProgram::CmdResult MainProgram::cmd_random_add(std::ostream& output, MatchIt
     return {};
 }
 
+MainProgram::CmdResult MainProgram::cmd_random_ways(std::ostream &output, MainProgram::MatchIter begin, MainProgram::MatchIter end)
+{
+    string sizestr = *begin++;
+    assert( begin == end && "Impossible number of parameters!");
+
+    unsigned int size = convert_string_to<unsigned int>(sizestr);
+
+    add_random_ways(size);
+
+    output << "Added: " << size << " ways." << endl;
+
+    view_dirty = true;
+
+    return {};
+}
+
 void MainProgram::test_random_add()
 {
     add_random_places_areas(1);
+}
+
+void MainProgram::test_random_ways()
+{
+    add_random_ways(1);
 }
 
 MainProgram::CmdResult MainProgram::cmd_randseed(std::ostream& output, MatchIter begin, MatchIter end)
@@ -951,17 +972,15 @@ void MainProgram::add_random_ways(unsigned int n)
 {
     for (unsigned int i=0; i<n; ++i)
     {
-        WayID id = n_to_wayid(random_ways_added_);
-        Coord c1 = n_to_coord(random_ways_added_);
-        Coord c2 = {0,0};
-        if (random_ways_added_ > 0)
-        {
-            c2 = n_to_coord(random(decltype(random_ways_added_)(0),random_ways_added_));
-        }
-
-        ds_.add_way(id, {c1,c2});
-
         ++random_ways_added_;
+
+        WayID id = n_to_wayid(random_ways_added_);
+        Coord c1 = n_to_coord(random(decltype(random_ways_added_)(0),random_ways_added_));
+        Coord c2 = n_to_coord(random(decltype(random_ways_added_)(0),random_ways_added_));
+        if (c1.x != c2.x || c1.y != c2.y)
+        {
+            ds_.add_way(id, {c1,c2});
+        }
     }
 }
 
@@ -1498,6 +1517,8 @@ vector<MainProgram::CmdInfo> MainProgram::cmds_ =
     {"add_subarea_to_area", "SubareaID AreaID", areaidx+wsx+areaidx, &MainProgram::cmd_add_subarea_to_area, nullptr },
     {"all_ways", "", "", &MainProgram::cmd_all_ways, nullptr },
     {"add_way", "WayID (x,y) (x,y)...", wayidx+"((?:"+wsx+optcoordx+")+)", &MainProgram::cmd_add_way, nullptr },
+    {"random_ways", "number_of_ways_to_add", numx,
+     &MainProgram::cmd_random_ways, &MainProgram::test_random_ways },
     {"way_coords", "WayID", wayidx, &MainProgram::cmd_way_coords, &MainProgram::test_way_coords },
     {"ways_from", "Coord", coordx, &MainProgram::cmd_ways_from, &MainProgram::test_ways_from },
     {"clear_ways", "", "", &MainProgram::cmd_clear_ways, nullptr },
@@ -2210,10 +2231,10 @@ PlaceID MainProgram::n_to_placeid(unsigned long int n)
 
 Coord MainProgram::n_to_coord(unsigned long n)
 {
-    unsigned long int hash1 = prime2_*(2*n) + prime1_;
-    unsigned long int hash2 = prime1_*(2*n+1) + prime2_;
+    unsigned long int hash = prime1_ * n + prime2_;
+    hash = hash ^ (hash + 0x9e3779b9 + (hash << 6) + (hash >> 2)); // :-P
 
-    return {static_cast<int>(hash1 % 1000), static_cast<int>(hash2 % 1000)};
+    return {static_cast<int>(hash % 1000), static_cast<int>((hash/1000) % 1000)};
 }
 
 void MainProgram::init_regexs()
