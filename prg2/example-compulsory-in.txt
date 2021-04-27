@@ -1,4 +1,4 @@
-clear_all
+clear_ways
 all_ways
 read "example-places.txt" silent
 read "example-areas.txt" silent

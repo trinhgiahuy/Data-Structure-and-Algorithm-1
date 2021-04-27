@@ -1,5 +1,5 @@
-> clear_all
-Cleared everything.
+> clear_ways
+All routes removed.
 > all_ways
 No ways!
 > read "example-places.txt" silent

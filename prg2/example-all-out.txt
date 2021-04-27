@@ -1,8 +1,8 @@
 > # First read in compulsory example
 > read "example-compulsory-in.txt"
 ** Commands from 'example-compulsory-in.txt'
-> clear_all
-Cleared everything.
+> clear_ways
+All routes removed.
 > all_ways
 No ways!
 > read "example-places.txt" silent
