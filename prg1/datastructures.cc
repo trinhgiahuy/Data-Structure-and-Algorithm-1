@@ -166,7 +166,7 @@ Name Datastructures::get_area_name(AreaID id)
         return NO_NAME;
     }else{
 
-        Name name = id_data.at(id)->name;
+        Name name = area_data.at(id)->name;
         return name;
     }
 }
@@ -235,6 +235,8 @@ std::vector<PlaceID> Datastructures::places_coord_order()
                 //id_coords.push_back(id_coord);
             //std::sort(id_coords.begin(),id_coords.end(),&compare_place_coord);
             return id_coords;
+        }else{
+            //Case isCoordSorted is true
         }
     }else{
         return {};
@@ -407,6 +409,16 @@ std::vector<PlaceID> Datastructures::places_closest_to(Coord xy, PlaceType type)
     return placeID_list;
 }
 
+int findIndex(const std::vector<PlaceID> &arr, PlaceID item) {
+
+    for (unsigned int i = 0; i < arr.size(); ++i) {
+        if (arr[i] == item)
+            return i;
+    }
+
+    return -1;
+}
+
 bool Datastructures::remove_place(PlaceID id)
 {
     // Replace this comment with your implementation
@@ -417,6 +429,10 @@ bool Datastructures::remove_place(PlaceID id)
     //std::shared_ptr<Place> this_place = id_data.at(id);
 
     id_data.erase(id);
+
+    place_alpha.erase(std::remove(place_alpha.begin(),place_alpha.end(),id),place_alpha.end());
+    place_coord.erase(std::remove(place_coord.begin(),place_coord.end(),id),place_coord.end());
+
     return true;
 
 }
