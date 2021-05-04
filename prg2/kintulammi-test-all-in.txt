@@ -1,0 +1,21 @@
+read "kintulammi-test-compulsory-in.txt"
+
+# Test a route with the least crossroads
+route_least_crossroads (557,242) (420,552)
+route_least_crossroads (264,322) (371,338)
+
+# Test the shortest route (from the same coordinates as the last command above!)
+route_shortest_distance (264,322) (371,338)
+
+ways_from (194,119)
+# Remove a way to isolate part of the map
+remove_way 0x21
+
+# The command below shouldn't find any cycles
+route_with_cycle (53,254)
+# If you haven't implemented remove_way above, the command below may found other cycles
+route_with_cycle (182,42)
+
+# If you haven't implemented remove_way above, trimming may produce a network that is
+# 50 longer (the length of the removed way)
+trim_ways
