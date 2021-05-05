@@ -27,6 +27,9 @@ Type random_in_range(Type start, Type end)
 Datastructures::Datastructures()
 {
     // Replace this comment with your implementation
+    //all_coord_way_map={};
+    all_ways_coord_vct = {};
+    ways_map = {};
 }
 
 Datastructures::~Datastructures()
@@ -173,33 +176,222 @@ AreaID Datastructures::common_area_of_subareas(AreaID id1, AreaID id2)
     return NO_AREA;
 }
 
+// Phase 2 operations
+bool Datastructures::existWay(WayID id){
+
+    if(ways_map.empty()){
+        return false;
+    }
+
+    if (ways_map.find(id) == ways_map.end()){
+        return  false;
+    }else{
+        return true;
+    }
+}
+
+bool Datastructures::checkCoordExist(std::vector<Coord> coord_vct_, Coord coord_){
+    if(coord_vct_.empty()){
+        return  false;
+    }
+
+    for(unsigned int i = 0 ; i < coord_vct_.size(); i++){
+        if(coord_vct_[i] == coord_){
+            return  true;
+        }
+    }
+    return false;
+}
+
+/*
+bool Datastructures::existCoord(Coord id){
+
+    if(all_ways_coord_vct.empty()){
+        return  false;
+    }
+
+    if(checkCoordExist(all_ways_coord_vct,id)){
+        return true;
+    }else{
+        return false;
+    }
+}*/
+
+// A function that check the new vector of coordinate
+// and update the all_ways_coord_vct
+void Datastructures::updateAllWayCoord(std::vector<Coord> coord_vct_){
+    for(auto it : coord_vct_){
+        if(!checkCoordExist(all_ways_coord_vct,it)){
+            //New coordinate for way
+            all_ways_coord_vct.push_back(it);
+        }
+    }
+}
 std::vector<WayID> Datastructures::all_ways()
 {
-    // Replace this comment with your implementation
-    return {};
+    if (ways_map.empty()){
+        return  {NO_WAY};
+    }
+    ways_vec ways = {};
+    for(auto &pair : ways_map ){
+        ways.push_back(pair.first);
+    }
+    return ways;
 }
 
 bool Datastructures::add_way(WayID id, std::vector<Coord> coords)
-{   
-    // Replace this comment with your implementation
+{
+    //Invalid coordinate for way
+    if( coords.size() <= 1){
+        return  false;
+    }
+
+
+    if(ways_map.empty()){
+        Way new_way = Way{coords};
+        ways_map.insert({id,new_way});
+        updateAllWayCoord(coords);
+        return true;
+    }else{
+        if(ways_map.find(id) == ways_map.end()){
+            Way new_way = Way{coords};
+            ways_map.insert({id,new_way});
+            updateAllWayCoord(coords);
+            return true;
+        }else{
+            //Way already exist
+            return false;
+        }
+    }
+    /*
+    if(ways_map.empty()){
+        std::vector<std::pair<Coord,Coord>> temp_vector;
+        for(auto it = coords.begin(); it!= coords.end(); it++){
+            if(it == coords.begin()){
+                std::pair<Coord,Coord> temp_pair =std::make_pair(NO_COORD,coords.front());
+                temp_vector.push_back(temp_pair);
+                Way new_way = Way{temp_vector};
+                ways_map.insert({id,new_way});
+                updateAllWayCoord(coords);
+                return  true;
+            }else if ( it == coords.end()){
+                std::pair<Coord,Coord> temp_pair =std::make_pair(coords.back(),NO_COORD);
+                temp_vector.push_back(temp_pair);
+                Way new_way = Way{temp_vector};
+                ways_map.insert({id,new_way});
+                updateAllWayCoord(coords);
+                return  true;
+            }else{
+                std::pair<Coord,Coord> temp_pair =std::make_pair(*it,*it);
+                temp_vector.push_back(temp_pair);
+                Way new_way = Way{temp_vector};
+                ways_map.insert({id,new_way});
+                updateAllWayCoord(coords);
+                return  true;
+            }
+        }
+    }else{
+        //Way already exist
+        if(existWay(id)){
+            return false;
+        }else{
+            //Case way map contain some way.
+            std::vector<std::pair<Coord,Coord>> temp_vector;
+            for(auto it = coords.begin(); it!= coords.end(); it++){
+                if(it == coords.begin()){
+                    std::pair<Coord,Coord> temp_pair =std::make_pair(NO_COORD,coords.front());
+                    temp_vector.push_back(temp_pair);
+                    Way new_way = Way{temp_vector};
+                    ways_map.insert({id,new_way});
+                    updateAllWayCoord(coords);
+                    return  true;
+                }else if ( it == coords.end()){
+                    std::pair<Coord,Coord> temp_pair =std::make_pair(coords.back(),NO_COORD);
+                    temp_vector.push_back(temp_pair);
+                    Way new_way = Way{temp_vector};
+                    ways_map.insert({id,new_way});
+                    updateAllWayCoord(coords);
+                    return  true;
+                }else{
+                    std::pair<Coord,Coord> temp_pair =std::make_pair(*it,*it);
+                    temp_vector.push_back(temp_pair);
+                    Way new_way = Way{temp_vector};
+                    ways_map.insert({id,new_way});
+                    updateAllWayCoord(coords);
+                    return  true;
+                }
+            }
+        }
+    }*/
     return false;
 }
 
 std::vector<std::pair<WayID, Coord>> Datastructures::ways_from(Coord xy)
-{
-    // Replace this comment with your implementation
-    return {{NO_WAY, NO_COORD}};
+{ 
+
+    if(!checkCoordExist(all_ways_coord_vct,xy) || ways_map.empty()){
+        return {{NO_WAY, NO_COORD}};
+    }
+
+
+    std::vector<std::pair<WayID, Coord>> temp_coord_way;
+    /*
+    for(auto it : ways_map){
+        if(it.second.coords_.empty()){
+            //No crossroad case, return empty vector
+            return {};
+        }else{
+            //Starting or ending crosssroad of way
+            if( (it.second.coords_.front().first == NO_COORD && it.second.coords_.front().second == xy) ||
+                (it.second.coords_.back().second == NO_COORD && it.second.coords_.back().first == xy) ){
+                temp_coord_way.push_back(std::make_pair(it.first,xy));
+                continue;
+            }else{
+                if(it.second.coords_.front().first == xy){
+                    temp_coord_way.push_back(std::make_pair(it.first,xy));
+                }
+            }
+        }
+    }*/
+
+    for(auto it : ways_map){
+        if(it.second.coords_.empty()){
+            return {};
+        }else{
+            if(it.second.coords_.front() == xy){
+                temp_coord_way.push_back(std::make_pair(it.first,it.second.coords_.back()));
+            }else if(it.second.coords_.back() == xy){
+                temp_coord_way.push_back(std::make_pair(it.first,it.second.coords_.front()));
+            }
+        }
+    }
+
+    return temp_coord_way;
 }
+
 
 std::vector<Coord> Datastructures::get_way_coords(WayID id)
 {
-    // Replace this comment with your implementation
-    return {NO_COORD};
+    std::vector<Coord> temp_coord_vct_;
+    if(ways_map.find(id) == ways_map.end()){
+        return {NO_COORD};
+    }else{
+        /*
+        for(auto it : ways_map.at(id).coords_){
+            if(it.first == NO_COORD){
+                temp_coord_vct_.push_back(it.second);
+            }else{
+                temp_coord_vct_.push_back(it.first);
+            }
+        }*/
+        return  ways_map.at(id).coords_;
+    }
+    //return temp_coord_vct_;
 }
 
 void Datastructures::clear_ways()
 {
-    // Replace this comment with your implementation
+    ways_map.clear();
 }
 
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_any(Coord fromxy, Coord toxy)

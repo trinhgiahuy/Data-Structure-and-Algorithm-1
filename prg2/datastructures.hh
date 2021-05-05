@@ -8,7 +8,17 @@
 #include <tuple>
 #include <utility>
 #include <limits>
+#include <algorithm>
 #include <functional>
+#include <set>
+#include <map>
+#include <list>
+#include <queue>
+#include <unordered_map>
+#include <cmath>
+#include <iostream>
+#include <memory>
+
 
 // Types for IDs
 using PlaceID = long long int;
@@ -75,8 +85,21 @@ using Distance = int;
 Distance const NO_DISTANCE = NO_VALUE;
 
 
+struct Way{
+    //WayID id_;
+    std::vector<Coord> coords_;
+    //std::vector<std::pair<Coord,Coord>> coords_;
+};
 
 // This is the class you are supposed to implement
+//Phase 2 using
+
+
+using ways_vec = std::vector<WayID>;
+using queue_list = std::list<PlaceID>;
+using parent_map = std::unordered_map<PlaceID,std::pair<WayID,PlaceID>>;
+using path_vec = std::vector<std::pair<WayID,PlaceID>>;
+using return_tuple = std::vector<std::tuple<PlaceID,WayID,Distance>>;
 
 class Datastructures
 {
@@ -230,8 +253,70 @@ public:
     // Short rationale for estimate:
     Distance trim_ways();
 
+    std::vector<Coord> getAllWayCoord();
+
+    bool checkCoordExist(std::vector<Coord> coord_vct_, Coord coord_);
+
+    void updateAllWayCoord(std::vector<Coord> coord_vct_);
+
 private:
+    //Phase 1 operation
     // Add stuff needed for your class implementation here
+    struct Place {
+        PlaceID id;
+        Name name;
+        PlaceType type;
+        Coord coord;
+    };
+
+
+    // A unordered map for mapping Place ID with pointer to its
+    std::unordered_map<PlaceID, std::shared_ptr<Place>> id_data;
+
+    //Vector that contain all places
+    std::vector<PlaceID>all_places_vct;
+    std::vector<AreaID>all_areas_vct;
+
+
+    bool isNameSorted;
+    bool isCoordSorted;
+
+    //Vector sorted by name and coordinate that will be return
+    std::vector<PlaceID> place_alpha;
+    std::vector<PlaceID> place_coord;
+
+
+    // Name here type string
+    struct Area
+    {
+        AreaID id;
+        Name name;
+        std::vector<Coord> bounds_;
+        AreaID parent_area_id;
+        std::vector<AreaID> sources_nodes_;
+    };
+
+    // A unordered map for mapping Area ID with pointer to its
+    std::unordered_map<AreaID,std::shared_ptr<Area>> area_data;
+
+    // Phase 2 operation
+    // Add stuff needed for your class implementation here
+    std::vector<Coord> all_ways_coord_vct;
+    std::unordered_map<WayID,Way> ways_map;
+
+    //std::unordered_map<Coord,std::vector<Way*>> all_coord_way_map;
+
+    bool existCoord(Coord id);
+    bool existWay(WayID id);
+
+    Distance getDistance(PlaceID fromplace, PlaceID toplace);
+    WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
+    void BFS(queue_list *queue, ways_vec* visited, parent_map *parent, bool flow);
+    void DFS(ways_vec *visited, parent_map *parent, PlaceID cur_play,
+             std::tuple<WayID, PlaceID, PlaceID> *return_pair);
+    path_vec bidirPath(parent_map *s_parent, parent_map *t_parent,
+                       PlaceID fromplace, PlaceID toplace, PlaceID intersectNode);
+    return_tuple getTuple(path_vec *path);
 
 };
 
