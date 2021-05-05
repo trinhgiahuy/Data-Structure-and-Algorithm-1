@@ -31,10 +31,10 @@ Way Way id Hori has coords:
 > ways_from (2,1)
 No ways from coord (2,1)
 > route_any (0,0) (5,0)
-1. (0,0) way Hori distance 0
+1. (0,0) distance 0
 2. (5,0) distance 5
 > route_any (5,0) (0,0)
-1. (5,0) way Hori distance 0
+1. (5,0) distance 0
 2. (0,0) distance 5
 > # Add another way, test more commands
 > add_way Vert (0,5) (2,4) (0,0)
@@ -55,18 +55,18 @@ Way Way id Vert has coords:
 > ways_from (5,0)
 1. (0,0) way Hori 
 > route_any (0,0) (0,5)
-1. (0,0) way Vert distance 0
+1. (0,0) distance 0
 2. (0,5) distance 6
 > route_any (0,5) (0,0)
-1. (0,5) way Vert distance 0
+1. (0,5) distance 0
 2. (0,0) distance 6
 > # Test route with more than one way
 > route_any (5,0) (0,5)
-1. (5,0) way Hori distance 0
-2. (0,0) way Vert distance 5
+1. (5,0) distance 0
+2. (0,0) distance 5
 3. (0,5) distance 11
 > route_any (0,5) (5,0)
-1. (0,5) way Vert distance 0
-2. (0,0) way Hori distance 6
+1. (0,5) distance 0
+2. (0,0) distance 6
 3. (5,0) distance 11
 > quit

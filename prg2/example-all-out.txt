@@ -70,8 +70,8 @@ Way Way id Wb has coords:
 2. (11,1) way Wb 
 3. (3,7) way Wc 
 > route_any (3,7) (3,10)
-1. (3,7) way Wd distance 0
-2. (0,7) way Wh distance 3
+1. (3,7) distance 0
+2. (0,7) distance 3
 3. (3,10) distance 7
 > 
 ** End of commands from 'example-compulsory-in.txt'
