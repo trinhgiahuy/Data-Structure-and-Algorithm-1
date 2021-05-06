@@ -186,10 +186,6 @@ AreaID Datastructures::common_area_of_subareas(AreaID id1, AreaID id2)
 // Phase 2 operations
 bool Datastructures::existWay(WayID id){
 
-    if(ways_map.empty()){
-        return false;
-    }
-
     if (ways_map.find(id) == ways_map.end()){
         return  false;
     }else{
@@ -210,9 +206,10 @@ bool Datastructures::checkCoordExist(std::vector<Coord> coord_vct_, Coord coord_
     return false;
 }
 
-/*
+
 bool Datastructures::existCoord(Coord id){
 
+    /*
     if(all_ways_coord_vct.empty()){
         return  false;
     }
@@ -221,8 +218,15 @@ bool Datastructures::existCoord(Coord id){
         return true;
     }else{
         return false;
+    }*/
+
+    if(coords_map.find(id) != coords_map.end()){
+        return  true;
+    }else{
+        return false;
     }
-}*/
+
+}
 
 // A function that check the new vector of coordinate
 // and update the all_ways_coord_vct
@@ -238,7 +242,7 @@ void Datastructures::updateAllWayCoord(std::vector<Coord> coord_vct_){
 std::vector<WayID> Datastructures::all_ways()
 {
     if (ways_map.empty()){
-        return  {NO_WAY};
+        return  {};
     }
     ways_vec ways = {};
     for(auto &pair : ways_map ){
@@ -249,6 +253,8 @@ std::vector<WayID> Datastructures::all_ways()
 
 bool Datastructures::add_way(WayID id, std::vector<Coord> coords)
 {
+    /*
+    //--------------------------------------------My working data structure
     //Invalid coordinate for way
     if( coords.size() <= 1){
         return  false;
@@ -271,6 +277,11 @@ bool Datastructures::add_way(WayID id, std::vector<Coord> coords)
             return false;
         }
     }
+    return false;
+    //--------------------------------------------My working data structure
+    */
+
+
     /*
     if(ways_map.empty()){
         std::vector<std::pair<Coord,Coord>> temp_vector;
@@ -330,19 +341,50 @@ bool Datastructures::add_way(WayID id, std::vector<Coord> coords)
                 }
             }
         }
-    }*/
+    }
     return false;
+    */
+
+    //---------------------------------------------Test new data structure
+    if(existWay(id) || coords.size() <= 1){
+        return false;
+    }
+
+    for(auto it = coords.begin(); it != coords.end(); it ++){
+        /*
+        if(!existCoord(*it)){
+            return false;   //Coordinate does not exist ????
+        }*/
+
+        if(it == coords.begin()){
+            coords_map[*it].ways_[id] = {NO_COORD,*(it+1)}; //Starting coord
+        }else if(it == coords.end()){
+            coords_map[*it].ways_[id] = {*(it-1),NO_COORD}; // Ending coord
+        }else{
+            coords_map[*it].ways_[id] = {*(it-1),*(it+1)}; // Connecting coord
+        }
+    }
+    ways_map[id] = {coords};
+    return true;
+    //---------------------------------------------Test new data structure
 }
 
 std::vector<std::pair<WayID, Coord>> Datastructures::ways_from(Coord xy)
 { 
-
+    /*
     if(!checkCoordExist(all_ways_coord_vct,xy) || ways_map.empty()){
         return {{NO_WAY, NO_COORD}};
+    }*/
+    if(!existCoord(xy)){
+        return {{NO_WAY,NO_COORD}};
     }
 
+    auto ways = coords_map[xy].ways_;
+    if(ways.empty()){
+        return {}; // No way passing this coordinate
+    }
 
-    std::vector<std::pair<WayID, Coord>> temp_coord_way;
+    std::vector<std::pair<WayID, Coord>> way_return_vec = {};
     /*
     for(auto it : ways_map){
         if(it.second.coords_.empty()){
@@ -362,41 +404,32 @@ std::vector<std::pair<WayID, Coord>> Datastructures::ways_from(Coord xy)
         }
     }*/
 
-    for(auto it : ways_map){
-        if(it.second.coords_.empty()){
-            return {};
-        }else{
-            if(it.second.coords_.front() == xy){
-                temp_coord_way.push_back(std::make_pair(it.first,it.second.coords_.back()));
-            }else if(it.second.coords_.back() == xy){
-                temp_coord_way.push_back(std::make_pair(it.first,it.second.coords_.front()));
-            }
+    for(auto it : ways){
+        if(it.second.second == NO_COORD){
+            continue;
         }
+        way_return_vec.push_back({it.first,it.second.second});
     }
 
-    return temp_coord_way;
+    return way_return_vec;
 }
 
 
 std::vector<Coord> Datastructures::get_way_coords(WayID id)
 {
     //std::vector<Coord> temp_coord_vct_;
-
+    /*
     if(ways_map.empty()){
         return {NO_COORD};
-    }
+    }*/
 
     if(ways_map.find(id) == ways_map.end()){
-        return {};
+        return {NO_COORD};
     }else{
         /*
         for(auto it : ways_map.at(id).coords_){
-            if(it.first == NO_COORD){
-                temp_coord_vct_.push_back(it.second);
-            }else{
-                temp_coord_vct_.push_back(it.first);
-            }
-        }*/
+            temp_coord_vct_.push_back(it);
+         }*/
         return  ways_map.at(id).coords_;
     }
     //return temp_coord_vct_;
@@ -411,7 +444,8 @@ void Datastructures::clear_ways()
     }
 }
 
-void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID, Coord> > *parent, bool flow){
+void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID, Coord>, CoordHash > *parent,
+                         bool flow){
     //Flow -> flow search, not flow -> backward search
     //Retrive first item from queue
     Coord current = queue->front();
@@ -442,7 +476,7 @@ void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, s
     }
 }
 
-bool Datastructures::DFS(std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID, Coord> > *parent, Coord cur_coord, std::tuple<WayID, Coord, Coord> *return_pair){
+bool Datastructures::DFS(std::vector<Coord> *visited, parent_map *parent, Coord cur_coord, std::tuple<WayID, Coord, Coord> *return_pair){
     bool found = false;
     visited->push_back(cur_coord);
     auto adj_map = coords_map[cur_coord].ways_;
@@ -537,7 +571,8 @@ Distance Datastructures::getDistance(Coord frompcoord, Coord tocoord){
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_any(Coord fromxy, Coord toxy)
 {
     // Replace this comment with your implementation
-    return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+    return_tuple return_vec = route_least_crossroads(fromxy,toxy);
+    return return_vec;
 }
 
 bool Datastructures::remove_way(WayID id)
@@ -549,7 +584,47 @@ bool Datastructures::remove_way(WayID id)
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_least_crossroads(Coord fromxy, Coord toxy)
 {
     // Replace this comment with your implementation
-    return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+    if(!existCoord(fromxy) || !existCoord(toxy) || fromxy == toxy){
+        return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+    }
+    // In this function I use bidirectional BFS search for fromcoord and tocoord
+
+    //Visited coord of forward and backward searches
+    std::vector<Coord> fw_visited, bw_visited = {};
+
+    //Save previous Coordinate and WayID from that Crossroad
+    parent_map fw_parent = {};
+    parent_map bw_parent = {};
+
+    // queue for front and backward search
+    std::list<Coord> fw_queue, bw_queue;
+
+    Coord intersectNode = NO_COORD;
+
+    fw_queue.push_back(fromxy);
+    fw_visited.push_back(fromxy);
+
+    bw_queue.push_back(toxy);
+    bw_visited.push_back(toxy);
+
+    while(!fw_queue.empty() && !bw_queue.empty()){
+        // Do BFS from source and target vertices.
+        // True indicate forward search and false show backward search
+        BFS(&fw_queue,&fw_visited,&fw_parent,true);
+        BFS(&bw_queue,&bw_visited,&bw_parent,false);
+
+        // check for intersecting vertex
+        intersectNode = isIntersecting(&fw_visited,&bw_visited);
+
+        //If intersecting vertex is found that mean there exist a path
+        if(intersectNode != NO_COORD){
+            //Get the path and return
+            auto path = bidirPath(&fw_parent,&bw_parent,fromxy,toxy,intersectNode);
+            return getTuple(&path);
+        }
+    }
+
+    return {{NO_COORD,NO_WAY,NO_DISTANCE}};
 }
 
 std::vector<std::tuple<Coord, WayID> > Datastructures::route_with_cycle(Coord fromxy)

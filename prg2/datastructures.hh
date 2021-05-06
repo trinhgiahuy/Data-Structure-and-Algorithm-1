@@ -257,10 +257,10 @@ public:
 
     void updateAllWayCoord(std::vector<Coord> coord_vct_);
 
-    void BFS(std::list<Coord> *queue, std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID,Coord>> *parent,
+    void BFS(std::list<Coord> *queue, std::vector<Coord> *visited, parent_map *parent,
              bool flow);
 
-    bool DFS(std::vector<Coord> *visited,std::unordered_map<Coord,std::pair<WayID,Coord>> *parent,
+    bool DFS(std::vector<Coord> *visited,parent_map *parent,
              Coord cur_coord, std::tuple<WayID,Coord,Coord> *return_pair);
 
     Coord isIntersecting(std::vector<Coord> *fw_visited, std::vector<Coord> *bw_visited);
