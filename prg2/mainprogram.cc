@@ -1235,7 +1235,7 @@ MainProgram::CmdResult MainProgram::cmd_route_any(std::ostream& output, MainProg
         for (auto iter = steps.begin()+1; iter != steps.end(); ++iter)
         {
             auto& [ncoord, nwayid, ndist] = *iter;
-            result.emplace_back(coord, ncoord, wayid, dist);
+            result.emplace_back(coord, ncoord, NO_WAY, dist);
             coord = ncoord; wayid = nwayid; dist = ndist;
         }
         result.emplace_back(coord, NO_COORD, NO_WAY, dist);

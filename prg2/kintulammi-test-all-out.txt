@@ -46,9 +46,9 @@ Way Way id 0x3d has coords:
 > 
 > # Finding a route (a simple case so that there's only one choice)
 > route_any (540,517) (465,487)
-1. (540,517) way 0x124cec17 distance 0
-2. (462,528) way 0x64 distance 96
-3. (478,491) way 0x124cec19 distance 135
+1. (540,517) distance 0
+2. (462,528) distance 96
+3. (478,491) distance 135
 4. (465,487) distance 148
 > quit
 ** End of commands from 'kintulammi-test-compulsory-in.txt'
