@@ -28,8 +28,15 @@ Datastructures::Datastructures()
 {
     // Replace this comment with your implementation
     //all_coord_way_map={};
+    //coords_map = {};
+    id_data={};
+    all_areas_vct={};
+    all_places_vct={};
+    place_alpha={};
+    place_coord={};
     all_ways_coord_vct = {};
     ways_map = {};
+
 }
 
 Datastructures::~Datastructures()
@@ -227,6 +234,7 @@ void Datastructures::updateAllWayCoord(std::vector<Coord> coord_vct_){
         }
     }
 }
+
 std::vector<WayID> Datastructures::all_ways()
 {
     if (ways_map.empty()){
@@ -372,9 +380,14 @@ std::vector<std::pair<WayID, Coord>> Datastructures::ways_from(Coord xy)
 
 std::vector<Coord> Datastructures::get_way_coords(WayID id)
 {
-    std::vector<Coord> temp_coord_vct_;
-    if(ways_map.find(id) == ways_map.end()){
+    //std::vector<Coord> temp_coord_vct_;
+
+    if(ways_map.empty()){
         return {NO_COORD};
+    }
+
+    if(ways_map.find(id) == ways_map.end()){
+        return {};
     }else{
         /*
         for(auto it : ways_map.at(id).coords_){
@@ -387,13 +400,140 @@ std::vector<Coord> Datastructures::get_way_coords(WayID id)
         return  ways_map.at(id).coords_;
     }
     //return temp_coord_vct_;
+
+
 }
 
 void Datastructures::clear_ways()
-{
-    ways_map.clear();
+{    
+    if(!ways_map.empty()){
+        ways_map.clear();
+    }
 }
 
+void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID, Coord> > *parent, bool flow){
+    //Flow -> flow search, not flow -> backward search
+    //Retrive first item from queue
+    Coord current = queue->front();
+    queue->pop_front();
+    auto adj_map = coords_map[current].ways_;
+    for(auto pair : adj_map){
+        // If adjacent vertex is not visited earlier
+        // mark it visited by assinging true value
+        Coord adj_id;
+        if(flow){
+            adj_id = pair.second.second;
+        }else{
+            adj_id = pair.second.first;
+        }
+
+        if(adj_id == NO_COORD){
+            continue; //Terminus coord
+        }
+
+        //Not visited
+        if(std::find(visited->begin(),visited->end(),adj_id) == visited->end()){
+            //Set current as parent of this vertex
+            (*parent)[adj_id] = {pair.first,current};
+
+            //Mark this vertex as visited
+            (*visited).push_back(adj_id);
+        }
+    }
+}
+
+bool Datastructures::DFS(std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID, Coord> > *parent, Coord cur_coord, std::tuple<WayID, Coord, Coord> *return_pair){
+    bool found = false;
+    visited->push_back(cur_coord);
+    auto adj_map = coords_map[cur_coord].ways_;
+    for(auto pair : adj_map){
+        Coord adj_id = pair.second.second;
+        if(adj_id == NO_COORD){
+            continue; // Terminus coord
+        }
+
+        //Found a repeated coordinate as it has 2 parent
+        if(parent->find(adj_id) != parent->end() && (*parent)[adj_id].second != cur_coord){
+            *return_pair = {pair.first,cur_coord,adj_id};
+            return true;
+        }
+
+        //No visited
+        if(std::find(visited->begin(),visited->end(),adj_id) == visited->end()){
+            // set current as parent of this vertex
+            (*parent)[adj_id] = {pair.first,cur_coord};
+
+            //DFS recursion for all unvisited coordinate
+            found = DFS(visited,parent,adj_id,return_pair);
+            if(found){
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+Coord Datastructures::isIntersecting(std::vector<Coord> *fw_visited, std::vector<Coord> *bw_visited){
+
+    auto common_coord = std::find_first_of(fw_visited->begin(),fw_visited->end(),
+                                           bw_visited->begin(),bw_visited->end());
+    if(*common_coord != *fw_visited->end()){
+        return *common_coord;
+    }else{
+        return NO_COORD;
+    }
+}
+
+std::vector<std::pair<WayID, Coord> > Datastructures::bidirPath(parent_map *fw_parent, parent_map *bw_parent, Coord frommcoord, Coord tocoord, Coord intersectNode)
+{
+    std::vector<std::pair<WayID,Coord>> path;
+    Coord id = intersectNode;
+    //Now we get hte path from forward search
+    while(id != frommcoord){
+        path.push_back({(*fw_parent)[id].first,(*fw_parent)[id].second});
+        id = (*fw_parent)[id].second;
+    }
+   std::reverse(path.begin(),path.end()); // Reverse as we go backward
+   id = intersectNode;
+   //Add intersectNode manually
+   path.push_back({(*bw_parent)[intersectNode].first,intersectNode});
+      // Retrieve path from backward search
+   // This time we are in the right track
+   while(id != tocoord){
+       path.push_back({(*bw_parent)[(*bw_parent)[id].second].first,(*bw_parent)[id].second});
+       id = (*bw_parent)[id].second;
+   }
+   //Last element need to be modify to match the format in description
+   path.pop_back();
+   path.push_back({NO_WAY,tocoord});
+   return path;
+}
+
+
+return_tuple Datastructures::getTuple(std::vector<std::pair<WayID,Coord>>*path){
+    //Get output format from given path
+    Distance distance = 0;
+    return_tuple return_vec = {};
+    auto it = path->begin();
+    while(true){
+        /*
+        std::tuple<Coord,WayID,Distance> temp_tuple;
+        temp_tuple = {it->second,it->first,distance};*/
+        return_vec.push_back({it->second,it->first,distance});
+        it++;
+        if(it == path->end()){
+            break;
+        }
+        distance += getDistance(it->second,(it-1)->second);
+    }
+    return return_vec;
+}
+
+Distance Datastructures::getDistance(Coord frompcoord, Coord tocoord){
+    int d_2 = (frompcoord.x - tocoord.x)*(frompcoord.x - tocoord.x) + (frompcoord.y - tocoord.y)*(frompcoord.y - tocoord.y);
+    return int(sqrt(d_2));
+}
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_any(Coord fromxy, Coord toxy)
 {
     // Replace this comment with your implementation

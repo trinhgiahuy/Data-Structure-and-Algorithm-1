@@ -85,21 +85,19 @@ using Distance = int;
 Distance const NO_DISTANCE = NO_VALUE;
 
 
-struct Way{
-    //WayID id_;
-    std::vector<Coord> coords_;
-    //std::vector<std::pair<Coord,Coord>> coords_;
-};
+
 
 // This is the class you are supposed to implement
 //Phase 2 using
 
 
 using ways_vec = std::vector<WayID>;
-using queue_list = std::list<PlaceID>;
-using parent_map = std::unordered_map<PlaceID,std::pair<WayID,PlaceID>>;
-using path_vec = std::vector<std::pair<WayID,PlaceID>>;
-using return_tuple = std::vector<std::tuple<PlaceID,WayID,Distance>>;
+using queue_list = std::list<Coord>;
+using parent_map = std::unordered_map<Coord,std::pair<WayID,Coord>,CoordHash>;
+using path_vec = std::vector<std::pair<WayID,Coord>>;
+using return_tuple = std::vector<std::tuple<Coord,WayID,Distance>>;
+
+using complex = std::unordered_map<WayID,std::pair<Coord,Coord>>;
 
 class Datastructures
 {
@@ -259,7 +257,26 @@ public:
 
     void updateAllWayCoord(std::vector<Coord> coord_vct_);
 
+    void BFS(std::list<Coord> *queue, std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID,Coord>> *parent,
+             bool flow);
+
+    bool DFS(std::vector<Coord> *visited,std::unordered_map<Coord,std::pair<WayID,Coord>> *parent,
+             Coord cur_coord, std::tuple<WayID,Coord,Coord> *return_pair);
+
+    Coord isIntersecting(std::vector<Coord> *fw_visited, std::vector<Coord> *bw_visited);
+
+    std::vector<std::pair<WayID,Coord>> bidirPath(parent_map *fw_parent, parent_map *bw_parent, Coord frommcoord, Coord tocoord, Coord intersectNode);
+
+    return_tuple getTuple(path_vec *path);
+
+    Distance getDistance(Coord frompcoord, Coord tocoord);
+
 private:
+    struct Way{
+        //WayID id_;
+        std::vector<Coord> coords_;
+        //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
+    };
     //Phase 1 operation
     // Add stuff needed for your class implementation here
     struct Place {
@@ -301,22 +318,37 @@ private:
 
     // Phase 2 operation
     // Add stuff needed for your class implementation here
+
+    // Error : call to implicitly-deleted default constructor of unordered_map<Coord,CoordMapWay> '
+    /**/
+    struct CoordMapWay {
+        //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
+        complex ways_;
+    };
+
+    std::unordered_map<Coord,CoordMapWay,CoordHash> coords_map;
+    //*/
+    //std::unordered_map<Coord,Way> coords_map;
+
+
+
     std::vector<Coord> all_ways_coord_vct;
     std::unordered_map<WayID,Way> ways_map;
+
 
     //std::unordered_map<Coord,std::vector<Way*>> all_coord_way_map;
 
     bool existCoord(Coord id);
     bool existWay(WayID id);
 
-    Distance getDistance(PlaceID fromplace, PlaceID toplace);
-    WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
-    void BFS(queue_list *queue, ways_vec* visited, parent_map *parent, bool flow);
-    void DFS(ways_vec *visited, parent_map *parent, PlaceID cur_play,
-             std::tuple<WayID, PlaceID, PlaceID> *return_pair);
+
+    //WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
+    //void BFS(queue_list *queue, ways_vec* visited, parent_map *parent, bool flow);
+    //void DFS(ways_vec *visited, parent_map *parent, PlaceID cur_play,
+    //         std::tuple<WayID, PlaceID, PlaceID> *return_pair);
     path_vec bidirPath(parent_map *s_parent, parent_map *t_parent,
                        PlaceID fromplace, PlaceID toplace, PlaceID intersectNode);
-    return_tuple getTuple(path_vec *path);
+
 
 };
 
