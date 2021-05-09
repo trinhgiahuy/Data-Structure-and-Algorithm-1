@@ -2,7 +2,7 @@
 
 #ifndef DATASTRUCTURES_HH
 #define DATASTRUCTURES_HH
-
+#include <limits>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -18,6 +18,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 
 // Types for IDs
@@ -25,6 +26,7 @@ using PlaceID = long long int;
 using AreaID = long long int;
 using Name = std::string;
 using WayID = std::string;
+
 
 // Return values for cases where required thing was not found
 PlaceID const NO_PLACE = -1;
@@ -48,6 +50,7 @@ struct Coord
     int x = NO_VALUE;
     int y = NO_VALUE;
 };
+
 
 // Example: Defining == and hash function for Coord so that it can be used
 // as key for std::unordered_map/set, if needed
@@ -99,6 +102,38 @@ using return_tuple = std::vector<std::tuple<Coord,WayID,Distance>>;
 
 using complex = std::unordered_map<WayID,std::pair<Coord,Coord>>;
 
+struct Edge
+{
+    Coord fromscoord = NO_COORD;
+    Coord tocoord = NO_COORD;
+    WayID way_id = NO_WAY;
+    Distance dist = 0;
+};
+
+struct CoordMapWay {
+    //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
+    complex ways_;
+    std::unordered_map<WayID,Edge,CoordHash> out_edges = {};
+};
+//WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
+//void BFS(queue_list *queue, ways_vec* visited, parent_map *parent, bool flow);
+//void DFS(ways_vec *visited, parent_map *parent, PlaceID cur_play,
+//         std::tuple<WayID, PlaceID, PlaceID> *return_pair);
+path_vec bidirPath(parent_map *s_parent, parent_map *t_parent,
+                   PlaceID fromplace, PlaceID toplace, PlaceID intersectNode);
+
+using pathEdge = std::vector<Edge>;
+
+// Used for storing where a Coordinate is already discovered by Dijkstra algorithm
+// and the edge that lead to that coord. Except for the last coord with
+// NO_COORD since the journey doesn't continue.
+using travelHistory = std::unordered_map<Coord,Edge,CoordHash>;
+
+// Used in Dijkstra algorithm for storing temporarily found minimum weigh.
+using Label = std::unordered_map<Coord, int,CoordHash>;
+
+// Used for infinite weight in finding shortest path alogrithms.
+///int const INF = std::numeric_limits<int>::max();
 class Datastructures
 {
 public:
@@ -271,10 +306,19 @@ public:
 
     Distance getDistance(Coord frompcoord, Coord tocoord);
 
+    Coord getEndingCoord(Coord prevCoord, WayID way);
+
+    pathEdge path_breadth_first_search(Coord fromcoord, Coord toCoord);
+
+    pathEdge make_path(Coord fromcoord, Coord tocoord, travelHistory& coord_visited, bool with_cycle, Edge last_edge = Edge());
+
+    return_tuple make_route_distance(pathEdge path_by_edges);
 private:
     struct Way{
         //WayID id_;
-        std::vector<Coord> coords_;
+        std::vector<Coord> coords_ = {};
+
+        std::vector<Coord> crossRoads_vct = {};
         //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
     };
     //Phase 1 operation
@@ -313,6 +357,7 @@ private:
         std::vector<AreaID> sources_nodes_;
     };
 
+
     // A unordered map for mapping Area ID with pointer to its
     std::unordered_map<AreaID,std::shared_ptr<Area>> area_data;
 
@@ -321,10 +366,7 @@ private:
 
     // Error : call to implicitly-deleted default constructor of unordered_map<Coord,CoordMapWay> '
     /**/
-    struct CoordMapWay {
-        //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
-        complex ways_;
-    };
+
 
     std::unordered_map<Coord,CoordMapWay,CoordHash> coords_map;
     //*/
@@ -340,15 +382,6 @@ private:
 
     bool existCoord(Coord id);
     bool existWay(WayID id);
-
-
-    //WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
-    //void BFS(queue_list *queue, ways_vec* visited, parent_map *parent, bool flow);
-    //void DFS(ways_vec *visited, parent_map *parent, PlaceID cur_play,
-    //         std::tuple<WayID, PlaceID, PlaceID> *return_pair);
-    path_vec bidirPath(parent_map *s_parent, parent_map *t_parent,
-                       PlaceID fromplace, PlaceID toplace, PlaceID intersectNode);
-
 
 };
 
