@@ -117,7 +117,7 @@ using path_vec = std::vector<std::pair<WayID,Coord>>;
 using return_tuple = std::vector<std::tuple<Coord,WayID,Distance>>;
 using return_tuple_without_dist = std::vector<std::tuple<Coord,WayID>>;
 
-using complex = std::unordered_map<WayID,std::pair<Coord,Coord>>;
+using connection = std::unordered_map<WayID,std::pair<Coord,Coord>>;
 
 struct Edge
 {
@@ -128,10 +128,8 @@ struct Edge
 };
 
 struct CoordMapWay {
-    //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
-    complex ways_;
-    complex crossRoadWays_;
-    std::unordered_map<WayID,Edge,CoordHash> out_edges = {};
+    connection ways_;
+    connection crossRoadWays_;
 };
 //WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
 //void BFS(queue_list *queue, ways_vec* visited, parent_map *parent, bool flow);
@@ -339,13 +337,9 @@ public:
     bool isCrossRoad(Coord coordCheck, WayID wayCheck);
 private:
     struct Way{
-        //WayID id_;
         std::vector<Coord> coords_ = {};
 
         std::vector<Coord> crossRoads_vct = {};
-
-        Coord dist_;
-        //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
     };
     //Phase 1 operation
     // Add stuff needed for your class implementation here

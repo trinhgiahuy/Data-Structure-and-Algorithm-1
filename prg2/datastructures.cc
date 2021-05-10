@@ -717,7 +717,7 @@ std::vector<std::pair<WayID, Coord>> Datastructures::ways_from(Coord xy)
         return {{NO_WAY,NO_COORD}};
     }
 
-    complex ways_edge = coords_map[xy].ways_;
+    connection ways_edge = coords_map[xy].ways_;
     qDebug() << "ways_edge.size()"<< ways_edge.size();
 
     if(ways_edge.empty()){
@@ -973,7 +973,7 @@ bool Datastructures::remove_way(WayID id)
     qDebug() <<"coord map size"<<coords_map.size();
     for(auto i = coords_map.begin(); i!= coords_map.end(); i++){
         qDebug()<<"Start crooss"<<i->first.x<<i->first.y;
-        complex ways_edge = coords_map.at(i->first).ways_;
+        connection ways_edge = coords_map.at(i->first).ways_;
         auto it = ways_edge.find(id);
         //Case that the starting and ending point of deleteed way
         if(it != ways_edge.end()){
@@ -998,7 +998,7 @@ bool Datastructures::remove_way(WayID id)
 
     //Clean cross road that no way longer lead to
     for(auto it = coords_map.begin(); it != coords_map.end(); it++){
-        complex ways_edge = coords_map.at(it->first).ways_;
+        connection ways_edge = coords_map.at(it->first).ways_;
         if(ways_edge.size() == 0){
             coords_map.erase(it);
         }
