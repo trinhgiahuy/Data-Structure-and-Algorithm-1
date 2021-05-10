@@ -73,9 +73,25 @@ struct CoordHash
 // as key for std::map/set
 inline bool operator<(Coord c1, Coord c2)
 {
-    if (c1.y < c2.y) { return true; }
-    else if (c2.y < c1.y) { return false; }
-    else { return c1.x < c2.x; }
+    // Use distance in square to avoid using sqrt().
+
+     long long int distance1 = (long long int)c1.x * c1.x +
+                               (long long int)c1.y * c1.y;
+     long long int distance2 = (long long int)c2.x * c2.x +
+                               (long long int)c2.y * c2.y;
+
+     if (distance1 < distance2)
+     {
+         return true;
+     }
+
+     if (distance1 == distance2 && c1.y < c2.y)
+     {
+         return true;
+     }
+
+     return false;
+
 }
 
 // Return value for cases where coordinates were not found
@@ -99,6 +115,7 @@ using queue_list = std::list<Coord>;
 using parent_map = std::unordered_map<Coord,std::pair<WayID,Coord>,CoordHash>;
 using path_vec = std::vector<std::pair<WayID,Coord>>;
 using return_tuple = std::vector<std::tuple<Coord,WayID,Distance>>;
+using return_tuple_without_dist = std::vector<std::tuple<Coord,WayID>>;
 
 using complex = std::unordered_map<WayID,std::pair<Coord,Coord>>;
 
@@ -287,6 +304,8 @@ public:
     // Short rationale for estimate:
     Distance trim_ways();
 
+    long long int distance_square(const Coord& xy1,const Coord& xy2);
+
     std::vector<Coord> getAllWayCoord();
 
     bool checkCoordExist(std::vector<Coord> coord_vct_, Coord coord_);
@@ -304,6 +323,8 @@ public:
     std::vector<std::pair<WayID,Coord>> bidirPath(parent_map *fw_parent, parent_map *bw_parent, Coord frommcoord, Coord tocoord, Coord intersectNode);
 
     return_tuple getTuple(path_vec *path);
+
+    return_tuple_without_dist getTupleWithoutDist(path_vec *path);
 
     Distance getDistance(WayID fromway);
 
