@@ -328,7 +328,7 @@ public:
 
     Coord getEndingCoord(Coord prevCoord, WayID way);
 
-    pathEdge path_breadth_first_search(Coord fromcoord, Coord toCoord);
+    //pathEdge path_breadth_first_search(Coord fromcoord, Coord toCoord);
 
     pathEdge make_path(Coord fromcoord, Coord tocoord, travelHistory& coord_visited, bool with_cycle, Edge last_edge = Edge());
 

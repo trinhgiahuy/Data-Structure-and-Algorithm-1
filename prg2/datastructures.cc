@@ -597,7 +597,7 @@ Coord Datastructures::getEndingCoord(Coord prevCoord, WayID way){
     }
 }
 
-pathEdge Datastructures::path_breadth_first_search(Coord fromcoord, Coord toCoord)
+/*pathEdge Datastructures::path_breadth_first_search(Coord fromcoord, Coord toCoord)
 {
     if(coords_map.find(fromcoord) == coords_map.end() ||
             coords_map.find(toCoord) == coords_map.end()){
@@ -634,7 +634,9 @@ pathEdge Datastructures::path_breadth_first_search(Coord fromcoord, Coord toCoor
     }
 
     return make_path(fromcoord,toCoord,coord_visited,false);
-}
+}*/
+
+
 
 pathEdge Datastructures::make_path(Coord fromcoord, Coord tocoord, travelHistory &coord_visited, bool with_cycle, Edge last_edge)
 {
@@ -1108,7 +1110,7 @@ std::vector<std::tuple<Coord, WayID> > Datastructures::route_with_cycle(Coord fr
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_shortest_distance(Coord fromxy, Coord toxy)
 {
     // Replace this comment with your implementation
-    //return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+    return {{NO_COORD, NO_WAY, NO_DISTANCE}};
 
     //return route_least_crossroads(fromxy,toxy);
 }
