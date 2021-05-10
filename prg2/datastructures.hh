@@ -384,15 +384,7 @@ private:
     // Phase 2 operation
     // Add stuff needed for your class implementation here
 
-    // Error : call to implicitly-deleted default constructor of unordered_map<Coord,CoordMapWay> '
-    /**/
-
-
     std::unordered_map<Coord,CoordMapWay,CoordHash> coords_map;
-    //*/
-    //std::unordered_map<Coord,Way> coords_map;
-
-
 
     std::vector<Coord> all_ways_coord_vct;
     std::unordered_map<WayID,Way> ways_map;

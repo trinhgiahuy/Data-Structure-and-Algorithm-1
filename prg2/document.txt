@@ -9,7 +9,7 @@
 	+ 
 1.2. STRUCT OF CoordMapWay
 
-	+ "ways" : Connection type: It present a WayID with a pair of adjacent coordinate of that coordinate. 
+	+ ways_map" : Connection type: It present a WayID with a pair of adjacent coordinate of that coordinate. 
 								If the coordinate is crossroad. either of its pair element is NO_COORD
 	
 	+ "crossRoadWays_" : Connection type: Same as ways with different that included only the map of crossroad.
