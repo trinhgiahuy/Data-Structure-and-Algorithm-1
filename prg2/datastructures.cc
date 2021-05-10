@@ -221,10 +221,8 @@ std::vector<PlaceID> Datastructures::places_coord_order()
         }else{
             //Case isCoordSorted is true
         }
-    }else{
-        return {};
     }
-
+    return  {};
 }
 
 std::vector<PlaceID> Datastructures::find_places_name(Name const& name)
@@ -1110,9 +1108,9 @@ std::vector<std::tuple<Coord, WayID> > Datastructures::route_with_cycle(Coord fr
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_shortest_distance(Coord fromxy, Coord toxy)
 {
     // Replace this comment with your implementation
-    return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+    //return {{NO_COORD, NO_WAY, NO_DISTANCE}};
 
-    //return route_least_crossroads(fromxy,toxy);
+    return route_least_crossroads(fromxy,toxy);
 }
 
 Distance Datastructures::trim_ways()
