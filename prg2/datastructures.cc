@@ -750,21 +750,47 @@ return_tuple Datastructures::getTuple(std::vector<std::pair<WayID,Coord>>*path){
     Distance distance = 0;
     return_tuple return_vec = {};
     auto it = path->begin();
+    /*
+    qDebug()<<"path size"<<path->size();
+    qDebug()<<path->front().second.x;
+    qDebug()<<path->front().second.y;
+    qDebug()<<path->back().second.x;
+    qDebug()<<path->back().second.y;
+    */
     while(true){
+        qDebug()<<distance;
+        qDebug()<<it->second.x<<it->second.y;
         return_vec.push_back({it->second,it->first,distance});
-        it++;
-        if(it == path->end()){
+        if(*it == path->back()){
+            qDebug()<<"Break";
             break;
         }
-        distance += getDistance(it->second,(it-1)->second);
+        Distance d_prev = getDistance(it->first);
+        distance += d_prev;
+        it++;
     }
-    return return_vec;
     qDebug() << "End Get turple";
+    return return_vec;
+
 }
 
-Distance Datastructures::getDistance(Coord frompcoord, Coord tocoord){
-    int d_2 = (frompcoord.x - tocoord.x)*(frompcoord.x - tocoord.x) + (frompcoord.y - tocoord.y)*(frompcoord.y - tocoord.y);
-    return std::floor(sqrt(d_2));
+Distance Datastructures::getDistance(WayID fromway){
+    //qDebug()<<"call getDistance";
+    std::vector<Coord> temp_way_coord_vct = ways_map.at(fromway).coords_;
+    //ways_map.at(fromwway).coords_.at(fromcoord).
+    Distance dist = 0;
+    for(unsigned long i =0; i<temp_way_coord_vct.size()-1;i++){
+        //qDebug()<<"@";
+
+        //int d_2 = (frompcoord.x - tocoord.x)*(frompcoord.x - tocoord.x) + (frompcoord.y - tocoord.y)*(frompcoord.y - tocoord.y);
+        int d_ = (temp_way_coord_vct.at(i).x-temp_way_coord_vct.at(i+1).x)*(temp_way_coord_vct.at(i).x-temp_way_coord_vct.at(i+1).x)
+                + (temp_way_coord_vct.at(i).y-temp_way_coord_vct.at(i+1).y)*(temp_way_coord_vct.at(i).y-temp_way_coord_vct.at(i+1).y);
+        dist += std::floor(sqrt(d_));
+
+    }
+    //qDebug()<<dist;
+    return dist;
+
 }
 
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_any(Coord fromxy, Coord toxy)

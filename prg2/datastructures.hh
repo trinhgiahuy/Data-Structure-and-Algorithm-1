@@ -305,7 +305,7 @@ public:
 
     return_tuple getTuple(path_vec *path);
 
-    Distance getDistance(Coord frompcoord, Coord tocoord);
+    Distance getDistance(WayID fromway);
 
     Coord getEndingCoord(Coord prevCoord, WayID way);
 
@@ -322,6 +322,8 @@ private:
         std::vector<Coord> coords_ = {};
 
         std::vector<Coord> crossRoads_vct = {};
+
+        Coord dist_;
         //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
     };
     //Phase 1 operation
