@@ -113,6 +113,7 @@ struct Edge
 struct CoordMapWay {
     //std::unordered_map<WayID,std::pair<Coord,Coord>> ways_ = {} ;
     complex ways_;
+    complex crossRoadWays_;
     std::unordered_map<WayID,Edge,CoordHash> out_edges = {};
 };
 //WayID isIntersecting(ways_vec* s_visited, ways_vec *t_visited);
@@ -313,6 +314,8 @@ public:
     pathEdge make_path(Coord fromcoord, Coord tocoord, travelHistory& coord_visited, bool with_cycle, Edge last_edge = Edge());
 
     return_tuple make_route_distance(pathEdge path_by_edges);
+
+    bool isCrossRoad(Coord coordCheck, WayID wayCheck);
 private:
     struct Way{
         //WayID id_;

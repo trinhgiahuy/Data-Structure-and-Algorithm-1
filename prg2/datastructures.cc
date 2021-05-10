@@ -359,13 +359,15 @@ bool Datastructures::add_way(WayID id, std::vector<Coord> coords)
         //std::pair<Coord,Coord> temp_pair;
         if(it == coords.begin()){
             coords_map[*it].ways_[id] = {NO_COORD,*(it+1)}; //Starting coord
-            qDebug() <<"On right"<< (it+1)->x << "  "<<(it+1)->y;
+            coords_map[*it].crossRoadWays_[id] = {NO_COORD,coords.back()};
+            //qDebug() <<"On right"<< (it+1)->x << "  "<<(it+1)->y;
         }else{
             if(*it == coords.back()){
                 coords_map[*it].ways_[id] = {*(it-1),NO_COORD}; // Ending coord
-                qDebug() <<"On left"<< (it-1)->x << "  "<<(it-1)->y;
+                coords_map[*it].crossRoadWays_[id] = {NO_COORD,coords.front()};
+                //qDebug() <<"On left"<< (it-1)->x << "  "<<(it-1)->y;
             }else{
-                qDebug() << "Connecting";
+                //qDebug() << "Connecting";
                 coords_map[*it].ways_[id] = {*(it-1),*(it+1)}; // Connecting coord
             }
         }
@@ -376,8 +378,8 @@ bool Datastructures::add_way(WayID id, std::vector<Coord> coords)
     ways_map.at(id).crossRoads_vct.push_back(coords.front());
     ways_map.at(id).crossRoads_vct.push_back(coords.back());
 
-    qDebug() << ways_map.at(id).crossRoads_vct.front().x <<ways_map.at(id).crossRoads_vct.front().y << "     "
-             <<ways_map.at(id).crossRoads_vct.back().x << ways_map.at(id).crossRoads_vct.back().y;
+    //qDebug() << ways_map.at(id).crossRoads_vct.front().x <<ways_map.at(id).crossRoads_vct.front().y << "     "
+    //         <<ways_map.at(id).crossRoads_vct.back().x << ways_map.at(id).crossRoads_vct.back().y;
     return true;
     //---------------------------------------------Test new data structure
 }
@@ -501,6 +503,17 @@ return_tuple Datastructures::make_route_distance(pathEdge path_by_edges)
 
 }
 
+bool Datastructures::isCrossRoad(Coord coordCheck, WayID wayCheck)
+{
+    std::vector<Coord> tempCrossRoad = ways_map.at(wayCheck).crossRoads_vct;
+    for(auto it : tempCrossRoad){
+        if(it == coordCheck){
+            return true;
+        }
+    }
+    return  false;
+}
+
 
 std::vector<std::pair<WayID, Coord>> Datastructures::ways_from(Coord xy)
 { 
@@ -591,6 +604,8 @@ void Datastructures::clear_ways()
     }
 }
 
+
+
 void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, std::unordered_map<Coord, std::pair<WayID, Coord>, CoordHash > *parent,
                          bool flow){
     //Flow -> flow search, not flow -> backward search
@@ -601,7 +616,7 @@ void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, s
 
 
     queue->pop_front();
-    auto adj_map = coords_map[current].ways_;
+    auto adj_map = coords_map[current].crossRoadWays_;
     for(auto pair : adj_map){
         // If adjacent vertex is not visited earlier
         // mark it visited by assinging true value
@@ -611,31 +626,42 @@ void Datastructures::BFS(std::list<Coord> *queue, std::vector<Coord> *visited, s
         }else{
             adj_id = pair.second.first;
         }
+
+
         qDebug()<< "adj_id" << adj_id.x <<"   "<<adj_id.y;
         if(adj_id == NO_COORD){
-            //continue; //Terminus coord
-
-            //?? Revert the searching
             if(flow){
                 adj_id = pair.second.first;
             }else{
                 adj_id = pair.second.second;
             }
         }
-        qDebug()<< "adj_id after invert" << adj_id.x <<"   "<<adj_id.y;
+        qDebug()<< "adj_id after inverting" << adj_id.x <<"   "<<adj_id.y;
+        //if(isCrossRoad(adj_id,pair.first)){
+            //?? Revert the searching
+            /*
+            if(flow){
+                adj_id = pair.second.first;
+            }else{
+                adj_id = pair.second.second;
+            }*/
+            if(std::find(visited->begin(),visited->end(),adj_id) == visited->end()){
+                qDebug() << "Call unvisited";
+
+                //Set current as parent of this vertex
+                (*parent)[adj_id] = {pair.first,current};
+
+                //Mark this vertex as visited
+                (*visited).push_back(adj_id);
+                qDebug() <<"Visited vec size"<<(*visited).size();
+                //Push to the end of queue
+                queue->push_back(adj_id);
+            }
+            //continue;
+        //}
+        //qDebug()<< "adj_id after invert" << adj_id.x <<"   "<<adj_id.y;
         //Not visited
-        if(std::find(visited->begin(),visited->end(),adj_id) == visited->end()){
-            qDebug() << "Call unvisited";
 
-            //Set current as parent of this vertex
-            (*parent)[adj_id] = {pair.first,current};
-
-            //Mark this vertex as visited
-            (*visited).push_back(adj_id);
-            qDebug() <<"Visited vec size"<<(*visited).size();
-            //Push to the end of queue
-            queue->push_back(adj_id);
-        }
     }
 }
 
@@ -687,7 +713,8 @@ Coord Datastructures::isIntersecting(std::vector<Coord> *fw_visited, std::vector
     }
 }
 
-std::vector<std::pair<WayID, Coord> > Datastructures::bidirPath(parent_map *fw_parent, parent_map *bw_parent, Coord frommcoord, Coord tocoord, Coord intersectNode)
+std::vector<std::pair<WayID, Coord> > Datastructures::bidirPath(parent_map *fw_parent, parent_map *bw_parent, Coord frommcoord, Coord tocoord,
+                                                                Coord intersectNode)
 {
     qDebug() << "Call bi dir path";
     std::vector<std::pair<WayID,Coord>> path;
@@ -724,9 +751,6 @@ return_tuple Datastructures::getTuple(std::vector<std::pair<WayID,Coord>>*path){
     return_tuple return_vec = {};
     auto it = path->begin();
     while(true){
-        /*
-        std::tuple<Coord,WayID,Distance> temp_tuple;
-        temp_tuple = {it->second,it->first,distance};*/
         return_vec.push_back({it->second,it->first,distance});
         it++;
         if(it == path->end()){
@@ -740,7 +764,7 @@ return_tuple Datastructures::getTuple(std::vector<std::pair<WayID,Coord>>*path){
 
 Distance Datastructures::getDistance(Coord frompcoord, Coord tocoord){
     int d_2 = (frompcoord.x - tocoord.x)*(frompcoord.x - tocoord.x) + (frompcoord.y - tocoord.y)*(frompcoord.y - tocoord.y);
-    return int(sqrt(d_2));
+    return std::floor(sqrt(d_2));
 }
 
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_any(Coord fromxy, Coord toxy)
@@ -801,6 +825,8 @@ std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_least_cro
         //If intersecting vertex is found that mean there exist a path
         if(intersectNode != NO_COORD){
             //Get the path and return
+            qDebug()<<"fw parent size"<<fw_parent.size();
+            qDebug()<<"fw parent size"<<bw_parent.size();
             auto path = bidirPath(&fw_parent,&bw_parent,fromxy,toxy,intersectNode);
             return getTuple(&path);
         }
@@ -838,7 +864,9 @@ std::vector<std::tuple<Coord, WayID> > Datastructures::route_with_cycle(Coord fr
 std::vector<std::tuple<Coord, WayID, Distance> > Datastructures::route_shortest_distance(Coord fromxy, Coord toxy)
 {
     // Replace this comment with your implementation
-    return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+    //return {{NO_COORD, NO_WAY, NO_DISTANCE}};
+
+    return route_least_crossroads(fromxy,toxy);
 }
 
 Distance Datastructures::trim_ways()
