@@ -1,0 +1,192 @@
+> read "kintulammi-test-compulsory-in.txt"
+** Commands from 'kintulammi-test-compulsory-in.txt'
+> clear_all
+Cleared everything.
+> place_count
+Number of places: 0
+> read "kintulammi-places.txt" silent
+** Commands from 'kintulammi-places.txt'
+...(output discarded in silent mode)...
+** End of commands from 'kintulammi-places.txt'
+> read "kintulammi-areas.txt" silent
+** Commands from 'kintulammi-areas.txt'
+...(output discarded in silent mode)...
+** End of commands from 'kintulammi-areas.txt'
+> place_count
+Number of places: 51
+> place_name_type 589573891
+Place ID 589573891 has name 'kintulammin luonnonsuojelualue' and type 'area'
+kintulammin luonnonsuojelualue (area): pos=(303,320), id=589573891
+> place_coord 23860664
+Place ID 23860664 is in position (520,42)
+peuranta (area): pos=(520,42), id=23860664
+> places_coord_order
+1. vaha-lumooja (area): pos=(171,86), id=26813682
+2. shelter (shelter): pos=(179,81), id=2532316467
+3. pitkajarvi (area): pos=(63,213), id=26813632
+4. sarkijarvi (area): pos=(180,200), id=150880959
+5. iso paivajarvi (area): pos=(46,288), id=26813727
+6. rajasaari (area): pos=(255,161), id=150886708
+7. haukilammi (area): pos=(226,201), id=150817441
+8. saarijarvi (area): pos=(254,166), id=26813637
+9. area (area): pos=(262,156), id=150886706
+10. area (area): pos=(263,160), id=150886705
+11. saarijarvi (shelter): pos=(269,161), id=5604933321
+12. water (area): pos=(284,137), id=150886707
+13. pieni koiralammi (area): pos=(81,343), id=233036254
+14. kintulammi (area): pos=(232,289), id=43484353
+15. area (area): pos=(230,294), id=150817442
+16. kintulammen laavu (shelter): pos=(229,302), id=2180429434
+17. rajalammi (area): pos=(89,377), id=233036255
+18. saapaslammi (area): pos=(359,162), id=633073034
+19. ruutana (area): pos=(331,247), id=150817444
+20. ala-kaulamoinen (firepit): pos=(181,400), id=8286435023
+21. kintulammin luonnonsuojelualue (area): pos=(303,320), id=589573891
+22. pahasuo (other): pos=(412,169), id=1638253747
+23. kaulamoinen (area): pos=(180,422), id=150888612
+24. area (area): pos=(379,265), id=150894662
+25. kortejarvi (area): pos=(369,292), id=150894660
+26. kokonkallio (other): pos=(448,160), id=1638253734
+27. yla-kaulamoinen (firepit): pos=(192,444), id=5604940859
+28. kortejarven tila varaustupa (other): pos=(364,328), id=1638253736
+29. - (other): pos=(323,397), id=5605013073
+30. kirkkokivi (other): pos=(340,386), id=5926758313
+31. kortejarvi (parking): pos=(367,363), id=5926756276
+32. kirkkokivi (shelter): pos=(346,384), id=5604933167
+33. kaukaloinen (area): pos=(296,426), id=586662422
+34. kaukaloistenkallio (shelter): pos=(305,421), id=5604933009
+35. peuranta (area): pos=(520,42), id=23860664
+36. niemela (other): pos=(512,182), id=1638253746
+37. perajarvi (area): pos=(129,528), id=233035625
+38. lassijarvi (area): pos=(520,168), id=27360553
+39. lassila (other): pos=(534,167), id=1638253737
+40. iso kolujarvi (area): pos=(220,522), id=233035626
+41. pieni kolujarvi (area): pos=(248,522), id=233035627
+42. keltolammi (area): pos=(367,451), id=586662419
+43. maenpaa (other): pos=(568,215), id=1638253742
+44. pulesjarvi (other): pos=(471,422), id=7012530993
+45. kiikkisjarvi (area): pos=(582,255), id=200201223
+46. kiikkinen (other): pos=(563,296), id=1638253731
+47. lehtisaari (other): pos=(539,355), id=1638253740
+48. pulesjarvi (area): pos=(368,532), id=25211650
+49. harvia (area): pos=(636,165), id=27360524
+50. joutsenenpesansaari (other): pos=(471,459), id=1638253719
+51. pulesjarvi (area): pos=(514,411), id=25211642
+> find_places_name 'kirkkokivi'
+1. kirkkokivi (shelter): pos=(346,384), id=5604933167
+2. kirkkokivi (other): pos=(340,386), id=5926758313
+> find_places_type shelter
+1. kintulammen laavu (shelter): pos=(229,302), id=2180429434
+2. shelter (shelter): pos=(179,81), id=2532316467
+3. kaukaloistenkallio (shelter): pos=(305,421), id=5604933009
+4. kirkkokivi (shelter): pos=(346,384), id=5604933167
+5. saarijarvi (shelter): pos=(269,161), id=5604933321
+> change_place_name 5604933167 'kirkkokiven laavu'
+kirkkokiven laavu (shelter): pos=(346,384), id=5604933167
+> find_places_name 'kirkkokivi'
+kirkkokivi (other): pos=(340,386), id=5926758313
+> find_places_type shelter
+1. kintulammen laavu (shelter): pos=(229,302), id=2180429434
+2. shelter (shelter): pos=(179,81), id=2532316467
+3. kaukaloistenkallio (shelter): pos=(305,421), id=5604933009
+4. kirkkokiven laavu (shelter): pos=(346,384), id=5604933167
+5. saarijarvi (shelter): pos=(269,161), id=5604933321
+> area_name 150817444
+Area ID 150817444 has name 'ruutana'
+ruutana: id=150817444
+> subarea_in_areas 150817442
+Area hierarchy for area -: id=150817442
+1. kintulammi: id=43484353
+2. kintulammin luonnonsuojelualue: id=589573891
+> 
+** End of commands from 'kintulammi-test-compulsory-in.txt'
+> all_subareas_in_area 589573891
+All subareas of kintulammin luonnonsuojelualue: id=589573891
+1. kintulammi: id=43484353
+2. -: id=150817442
+3. ruutana: id=150817444
+4. -: id=150886707
+5. kaukaloinen: id=586662422
+> places_closest_to (300,300)
+1. kintulammin luonnonsuojelualue (area): pos=(303,320), id=589573891
+2. ruutana (area): pos=(331,247), id=150817444
+3. kintulammi (area): pos=(232,289), id=43484353
+> places_closest_to (300,300) shelter
+1. kintulammen laavu (shelter): pos=(229,302), id=2180429434
+2. kirkkokiven laavu (shelter): pos=(346,384), id=5604933167
+3. kaukaloistenkallio (shelter): pos=(305,421), id=5604933009
+> places_closest_to (300,300) firepit
+1. ala-kaulamoinen (firepit): pos=(181,400), id=8286435023
+2. yla-kaulamoinen (firepit): pos=(192,444), id=5604940859
+> common_area_of_subareas 150886708 150886706
+Common area of areas rajasaari: id=150886708 and -: id=150886706 is:
+saarijarvi: id=26813637
+> common_area_of_subareas 150817442 150817444
+Common area of areas -: id=150817442 and ruutana: id=150817444 is:
+kintulammin luonnonsuojelualue: id=589573891
+> 
+> find_places_name 'pulesjarvi'
+1. pulesjarvi (area): pos=(514,411), id=25211642
+2. pulesjarvi (area): pos=(368,532), id=25211650
+3. pulesjarvi (other): pos=(471,422), id=7012530993
+> remove_place 7012530993
+Place pulesjarvi(other) removed.
+> find_places_name 'pulesjarvi'
+1. pulesjarvi (area): pos=(514,411), id=25211642
+2. pulesjarvi (area): pos=(368,532), id=25211650
+> places_coord_order
+1. vaha-lumooja (area): pos=(171,86), id=26813682
+2. shelter (shelter): pos=(179,81), id=2532316467
+3. pitkajarvi (area): pos=(63,213), id=26813632
+4. sarkijarvi (area): pos=(180,200), id=150880959
+5. iso paivajarvi (area): pos=(46,288), id=26813727
+6. rajasaari (area): pos=(255,161), id=150886708
+7. haukilammi (area): pos=(226,201), id=150817441
+8. saarijarvi (area): pos=(254,166), id=26813637
+9. area (area): pos=(262,156), id=150886706
+10. area (area): pos=(263,160), id=150886705
+11. saarijarvi (shelter): pos=(269,161), id=5604933321
+12. water (area): pos=(284,137), id=150886707
+13. pieni koiralammi (area): pos=(81,343), id=233036254
+14. kintulammi (area): pos=(232,289), id=43484353
+15. area (area): pos=(230,294), id=150817442
+16. kintulammen laavu (shelter): pos=(229,302), id=2180429434
+17. rajalammi (area): pos=(89,377), id=233036255
+18. saapaslammi (area): pos=(359,162), id=633073034
+19. ruutana (area): pos=(331,247), id=150817444
+20. ala-kaulamoinen (firepit): pos=(181,400), id=8286435023
+21. kintulammin luonnonsuojelualue (area): pos=(303,320), id=589573891
+22. pahasuo (other): pos=(412,169), id=1638253747
+23. kaulamoinen (area): pos=(180,422), id=150888612
+24. area (area): pos=(379,265), id=150894662
+25. kortejarvi (area): pos=(369,292), id=150894660
+26. kokonkallio (other): pos=(448,160), id=1638253734
+27. yla-kaulamoinen (firepit): pos=(192,444), id=5604940859
+28. kortejarven tila varaustupa (other): pos=(364,328), id=1638253736
+29. - (other): pos=(323,397), id=5605013073
+30. kirkkokivi (other): pos=(340,386), id=5926758313
+31. kortejarvi (parking): pos=(367,363), id=5926756276
+32. kirkkokiven laavu (shelter): pos=(346,384), id=5604933167
+33. kaukaloinen (area): pos=(296,426), id=586662422
+34. kaukaloistenkallio (shelter): pos=(305,421), id=5604933009
+35. peuranta (area): pos=(520,42), id=23860664
+36. niemela (other): pos=(512,182), id=1638253746
+37. perajarvi (area): pos=(129,528), id=233035625
+38. lassijarvi (area): pos=(520,168), id=27360553
+39. lassila (other): pos=(534,167), id=1638253737
+40. iso kolujarvi (area): pos=(220,522), id=233035626
+41. pieni kolujarvi (area): pos=(248,522), id=233035627
+42. keltolammi (area): pos=(367,451), id=586662419
+43. maenpaa (other): pos=(568,215), id=1638253742
+44. kiikkisjarvi (area): pos=(582,255), id=200201223
+45. kiikkinen (other): pos=(563,296), id=1638253731
+46. lehtisaari (other): pos=(539,355), id=1638253740
+47. pulesjarvi (area): pos=(368,532), id=25211650
+48. harvia (area): pos=(636,165), id=27360524
+49. joutsenenpesansaari (other): pos=(471,459), id=1638253719
+50. pulesjarvi (area): pos=(514,411), id=25211642
+> places_closest_to (471,422)
+1. joutsenenpesansaari (other): pos=(471,459), id=1638253719
+2. pulesjarvi (area): pos=(514,411), id=25211642
+3. lehtisaari (other): pos=(539,355), id=1638253740
+> 

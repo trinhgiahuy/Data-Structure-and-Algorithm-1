@@ -1,0 +1,43 @@
+# VERY simple basic test of all compulsory commands
+# Clear the data structures and check that place count is zero
+clear_all
+place_count
+# Test compulsory commands with empty data
+all_places
+all_areas
+places_coord_order
+places_alphabetically
+find_places_name 'Noplace'
+find_places_type firepit
+# Add one place and test commands
+add_place 11111111 'One' shelter (1,1)
+place_count
+all_places
+places_coord_order
+places_alphabetically
+find_places_name 'One'
+find_places_type shelter
+change_place_name 11111111 'Yksi'
+find_places_name 'Yksi'
+find_places_name 'One'
+# Add another place, test more commands
+add_place 22222222 'Two' firepit (2,2)
+all_places
+places_alphabetically
+places_coord_order
+find_places_type shelter
+find_places_type firepit
+change_place_coord 22222222 (0,0)
+places_coord_order
+# Add one area and test commands
+add_area 1 'Area' (0,0) (10,0) (0,10)
+all_areas
+area_name 1
+subarea_in_areas 1
+# And another area as subarea
+add_area 2 'Area 2' (1,1) (7,1) (1,7)
+add_subarea_to_area 2 1
+all_areas
+subarea_in_areas 1
+subarea_in_areas 2
+quit

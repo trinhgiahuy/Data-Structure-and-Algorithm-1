@@ -1,0 +1,7 @@
+# First read in compulsory example
+read "example-compulsory-in.txt"
+route_least_crossroads (0,0) (7,10)
+route_with_cycle (0,0)
+route_shortest_distance (0,0) (7,10)
+trim_ways
+all_ways

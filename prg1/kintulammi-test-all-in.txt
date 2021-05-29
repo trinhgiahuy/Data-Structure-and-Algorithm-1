@@ -1,0 +1,13 @@
+read "kintulammi-test-compulsory-in.txt"
+all_subareas_in_area 589573891
+places_closest_to (300,300)
+places_closest_to (300,300) shelter
+places_closest_to (300,300) firepit
+common_area_of_subareas 150886708 150886706
+common_area_of_subareas 150817442 150817444
+
+find_places_name 'pulesjarvi'
+remove_place 7012530993
+find_places_name 'pulesjarvi'
+places_coord_order
+places_closest_to (471,422)

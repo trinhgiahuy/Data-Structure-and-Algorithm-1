@@ -1,0 +1,28 @@
+# VERY simple basic test of all compulsory commands
+# Clear the data structures and check that place count is zero
+clear_ways
+all_ways
+# Test compulsory commands with empty data
+way_coords xxxx
+ways_from (0,0)
+route_any (0,0) (1,1)
+# Add one way and test commands
+add_way Hori (0,0) (2,1) (5,0)
+way_coords Hori
+ways_from (0,0)
+ways_from (5,0)
+ways_from (2,1)
+route_any (0,0) (5,0)
+route_any (5,0) (0,0)
+# Add another way, test more commands
+add_way Vert (0,5) (2,4) (0,0)
+way_coords Vert
+ways_from (0,0)
+ways_from (0,5)
+ways_from (5,0)
+route_any (0,0) (0,5)
+route_any (0,5) (0,0)
+# Test route with more than one way
+route_any (5,0) (0,5)
+route_any (0,5) (5,0)
+quit

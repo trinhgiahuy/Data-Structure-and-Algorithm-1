@@ -1,0 +1,21 @@
+# VERY simple basic test of all (compulsory+non-compulsory) commands
+# Test all compulsory commands
+read "simpletest-compulsory-in.txt"
+# Test non-compulsory commands
+# Test removing a way
+# Remove one way and test route_any
+remove_way Hori
+route_any (0,0) (5,0)
+route_any (0,0) (0,5)
+route_any (5,0) (0,0)
+route_any (5,0) (0,5)
+# Add more ways and test other routes
+add_way Hori (0,0) (2,1) (5,0)
+add_way Short (5,0) (7,0)
+add_way Up (7,2) (7,0)
+add_way Zig (0,5) (2,7) (4,3) (6,7) (7,2)
+route_least_crossroads (0,0) (7,2)
+route_shortest_distance (0,0) (7,2)
+route_with_cycle (0,0)
+trim_ways
+quit

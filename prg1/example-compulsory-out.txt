@@ -1,0 +1,91 @@
+> clear_all
+Cleared everything.
+> place_count
+Number of places: 0
+> read "example-places.txt"
+** Commands from 'example-places.txt'
+> # Places
+> add_place 10 'Laavu' shelter (3,3)
+Laavu (shelter): pos=(3,3), id=10
+> add_place 15 'Pysakointi' parking (0,0)
+Pysakointi (parking): pos=(0,0), id=15
+> add_place 4 'Nuotiopaikka' firepit (0,7)
+Nuotiopaikka (firepit): pos=(0,7), id=4
+> add_place 20 'Rantanuotio' firepit (11,1)
+Rantanuotio (firepit): pos=(11,1), id=20
+> add_place 99 'Vesijarvi' area (10,3)
+Vesijarvi (area): pos=(10,3), id=99
+> add_place 98 'Luoto' area (10,5)
+Luoto (area): pos=(10,5), id=98
+> add_place 78 'Lampi' area (1,5)
+Lampi (area): pos=(1,5), id=78
+> add_place 123 'Metsa' area (7,10)
+Metsa (area): pos=(7,10), id=123
+> 
+** End of commands from 'example-places.txt'
+> place_count
+Number of places: 8
+> place_name_type 10
+Place ID 10 has name 'Laavu' and type 'shelter'
+Laavu (shelter): pos=(3,3), id=10
+> place_coord 4
+Place ID 4 is in position (0,7)
+Nuotiopaikka (firepit): pos=(0,7), id=4
+> places_alphabetically
+1. Laavu (shelter): pos=(3,3), id=10
+2. Lampi (area): pos=(1,5), id=78
+3. Luoto (area): pos=(10,5), id=98
+4. Metsa (area): pos=(7,10), id=123
+5. Nuotiopaikka (firepit): pos=(0,7), id=4
+6. Pysakointi (parking): pos=(0,0), id=15
+7. Rantanuotio (firepit): pos=(11,1), id=20
+8. Vesijarvi (area): pos=(10,3), id=99
+> places_coord_order
+1. Pysakointi (parking): pos=(0,0), id=15
+2. Laavu (shelter): pos=(3,3), id=10
+3. Lampi (area): pos=(1,5), id=78
+4. Nuotiopaikka (firepit): pos=(0,7), id=4
+5. Vesijarvi (area): pos=(10,3), id=99
+6. Rantanuotio (firepit): pos=(11,1), id=20
+7. Luoto (area): pos=(10,5), id=98
+8. Metsa (area): pos=(7,10), id=123
+> find_places_type firepit
+1. Nuotiopaikka (firepit): pos=(0,7), id=4
+2. Rantanuotio (firepit): pos=(11,1), id=20
+> change_place_name 20 'Nuotiopaikka'
+Nuotiopaikka (firepit): pos=(11,1), id=20
+> find_places_name 'Nuotiopaikka'
+1. Nuotiopaikka (firepit): pos=(0,7), id=4
+2. Nuotiopaikka (firepit): pos=(11,1), id=20
+> read "example-areas.txt"
+** Commands from 'example-areas.txt'
+> # Areas
+> add_area 99 'Vesijarvi' (7,2) (12,2) (12,7) (7,7)
+Area: Vesijarvi: id=99
+> add_area 98 'Luoto' (10,4) (11,5) (10,6) (9,5)
+Area: Luoto: id=98
+> add_subarea_to_area 98 99
+Added subarea Luoto to area Vesijarvi
+> add_area 78 'Lampi' (0,4) (2,4) (1,6)
+Area: Lampi: id=78
+> add_area 123 'Metsa' (0,2) (2,0) (13,0) (15,12) (0,11)
+Area: Metsa: id=123
+> add_subarea_to_area 78 123
+Added subarea Lampi to area Metsa
+> add_subarea_to_area 99 123
+Added subarea Vesijarvi to area Metsa
+> 
+** End of commands from 'example-areas.txt'
+> all_areas
+1. Lampi: id=78
+2. Luoto: id=98
+3. Vesijarvi: id=99
+4. Metsa: id=123
+> area_name 99
+Area ID 99 has name 'Vesijarvi'
+Vesijarvi: id=99
+> subarea_in_areas 98
+Area hierarchy for area Luoto: id=98
+1. Vesijarvi: id=99
+2. Metsa: id=123
+> 
