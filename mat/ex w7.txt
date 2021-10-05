@@ -1,0 +1,53 @@
+7. true 
+8. false
+
+
+Ex :
+
+find one common element from 2 list
+
+Merge start from begin of both list
+One by one and compare 
+
+
+Other :
+
+Combine sorted list
+
+
+Combine 2 vectors 
+
+
+MOst complicate:
+
+When add element, add element to other list
+
+
+n*const and n*logn
+then merge 2 list => n logn
+
+
+
+4/
+
+binary_search : best case omega(1) worst case O(log n )
+
+
+O(n^2):
+log(n)*log(n)
+while loop 
+
+No element while loop does not execute. 
+Omega(log(n))
+
+Bugs: 
+Line 5&6:
+
+Erase iterator it invalid => cannot use iter. Iter may not point to
+vector anymore.
+
+6: Is not possible to increase since it is outside vct => get infite loop
+
+Fix :  
+Delete the value of iterator it point to 
+call 2 iterator delete first iterator. Use second iter.

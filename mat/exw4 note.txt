@@ -1,0 +1,16 @@
+selection sort big-theta (n) only compare to insertion-sort which run time is n^2
+
+MyAlgorithm(A)
+ s := true, i := A.length - 1
+ while s = true do
+     s := false
+     for j := 1 to i do
+         if A[j + 1] < A[j] then
+            exchange A[j] and A[j + 1]
+            s := true
+     i := i - 1
+	 
+	 
+MyAlgorithm called double sort
+Best case : Already sort, go through all value : n^2
+Worst case : go trough all value many time n^2

@@ -1,0 +1,8 @@
+read "example-ways.txt"
+all_ways
+way_coords Wb
+way_coords Wc
+way_coords Wd
+
+ways_from (3,3)
+route_any (3,7) (3,10)

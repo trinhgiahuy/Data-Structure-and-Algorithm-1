@@ -1,0 +1,101 @@
+----Call BFS 0 0 (FW)
+Call inside BFS
+Current from queue 0     0
+adj_id 3     3
+adj_id after invert 3     3
+Call unvisited
+Visited vec size 2
+
+----Call BFS BW 7,10 (BW)
+Call inside BFS
+Current from queue 7     10
+adj_id 13     8
+adj_id after invert 13     8
+Call unvisited
+Visited vec size 2
+adj_id -2147483648     -2147483648
+adj_id after invert 3     8
+Call unvisited
+Visited vec size 3
+
+--Call intersect 
+fw_queue size 1
+fw_visited size 2
+bw_queue size 2
+bw_visied size 3
+Call intersecting
+Common coord 1     0
+Find no intersecting
+
+--Call BFS 3 3
+Call inside BFS
+Current from queue 3     3
+adj_id 3     7
+adj_id after invert 3     7
+Call unvisited
+Visited vec size 3
+adj_id 5     1
+adj_id after invert 5     1
+Call unvisited
+Visited vec size 4
+----------
+adj_id -2147483648     -2147483648
+adj_id after invert 0     0
+
+
+---Call BFS BW 13 8
+Call inside BFS
+Current from queue 13     8
+adj_id 13     3
+adj_id after invert 13     3
+Call unvisited
+Visited vec size 4
+
+---Call  intersect
+fw_queue size 2
+fw_visited size 4
+bw_queue size 2
+bw_visied size 4
+Call intersecting
+Common coord 128     0
+Find no intersecting
+
+---Call BFS 3 7
+Call inside BFS
+Current from queue 3     7
+adj_id -2147483648     -2147483648
+adj_id after invert 0     7
+Call unvisited
+Visited vec size 5
+adj_id 3     8
+adj_id after invert 3     8
+Call unvisited
+Visited vec size 6
+adj_id -2147483648     -2147483648
+adj_id after invert 3     3
+
+--Call BFS BW 3 8
+Call inside BFS
+Current from queue 3     8
+adj_id 3     7
+adj_id after invert 3     7
+Call unvisited
+Visited vec size 5
+adj_id 7     10
+adj_id after invert 7     10
+
+--Call intersecting 
+fw_queue size 3
+fw_visited size 6
+bw_queue size 2
+bw_visied size 5
+Call intersecting
+Common coord 3     7
+
+	
+ Find intersecting
+Call bi dir path
+Call in right track
+Call in right track
+Finish bidir path
+Start Get turple

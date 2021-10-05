@@ -1,0 +1,8 @@
+read "../prg1/example-all-in.txt" 
+
+
+
+read "../prg1/example-places.txt"
+
+read "../prg1/example-areas.txt" 
+
