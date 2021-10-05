@@ -1,0 +1,1121 @@
+// ------------------------------------------------------------------------------------------------------Phase 2.
+
+// Function returns a list of routes in arbitrary order.
+std::vector<RouteID> Datastructures::all_routes()
+{
+    if (route_list.size() == 0)
+    {
+        return { };
+    }
+
+    std::vector<RouteID> routeID_list;
+    routeID_list.reserve(route_list.size());
+
+    for (auto route : route_list)
+    {
+        routeID_list.push_back(route.first);
+    }
+
+    return routeID_list;
+}
+
+// Function adds a new route running through the given stops.
+bool Datastructures::add_route(RouteID id, std::vector<StopID> stops)
+{
+    // Check if route ID is valid and there are stops to add.
+    if ((route_list.find(id) != route_list.end()) ||
+        stops.size() <= 1)
+    {
+        return false;
+    }
+
+    Route add_route;
+    add_route.id = id;
+    add_route.stops_on_route.reserve(stops.size());
+
+    for (auto it_stop = stops.begin(); it_stop != stops.end(); ++it_stop)
+    {
+        if (stop_list.find(*it_stop) == stop_list.end())
+        {
+            return false;
+        }
+
+        StopID curr_stop = *it_stop;
+        add_route.stops_on_route.push_back(curr_stop);
+
+        // Add incoming edge to a stop.
+        if (*it_stop != *stops.begin())
+        {
+            StopID prev_stop = *(--it_stop);
+            ++it_stop;
+
+            Edge add_in_edge = make_edge_no_trip(prev_stop, curr_stop, id);
+
+            stop_list.at(curr_stop).in_edges.insert({ id, add_in_edge });
+        }
+
+        // Add outcoming edge to a stop.
+        if (*it_stop != *stops.rbegin())
+        {
+            StopID next_stop = *(++it_stop);
+            --it_stop;
+
+            Edge add_out_edge = make_edge_no_trip(curr_stop, next_stop, id);
+
+            stop_list.at(curr_stop).out_edges.insert({ id, add_out_edge });
+        }
+    }
+
+    route_list.insert({ id, add_route });
+    return true;
+}
+
+// Function returns a list of routes from the given stops and what stops is
+// next on each route.
+std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID stopid)
+{
+    // Check if stop ID is valid.
+    if (stop_list.find(stopid) == stop_list.end())
+    {
+        return { {NO_ROUTE, NO_STOP} };
+    }
+
+    std::vector<std::pair<RouteID, StopID>> routes_out;
+
+    for (auto it = stop_list.at(stopid).out_edges.begin();
+        it != stop_list.at(stopid).out_edges.end(); ++it)
+    {
+        routes_out.push_back(std::make_pair(it->first, it->second.to_stop_ID));
+    }
+
+    return routes_out;
+}
+
+// Function returns list of route's stops in the driving order.
+std::vector<StopID> Datastructures::route_stops(RouteID id)
+{
+    // Check if route ID is valid.
+    if (route_list.find(id) == route_list.end())
+    {
+        return { NO_STOP };
+    }
+
+    return route_list.at(id).stops_on_route;
+}
+
+// Function clears out routes and trips
+void Datastructures::clear_routes()
+{
+    for (auto it_stop = stop_list.begin(); it_stop != stop_list.end();
+        ++it_stop)
+    {
+        // Remove all route information between stops.
+        it_stop->second.in_edges.clear();
+        it_stop->second.out_edges.clear();
+
+        // Keep walking connections.
+    }
+
+    route_list.clear();
+}
+
+// Function returns any journey between the given stops. In this implementation
+// function calls journey_least_stop().
+JourneyDistance Datastructures::journey_any(StopID fromstop, StopID tostop)
+{
+    return journey_least_stops(fromstop, tostop);
+}
+
+// Function returns a journey between the given stios with the minimum number
+// of stops.
+JourneyDistance Datastructures::journey_least_stops(StopID fromstop, StopID tostop)
+{
+    // Check if stop IDs are valid.
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return { {NO_STOP, NO_ROUTE, NO_DISTANCE} };
+    }
+
+    if (fromstop == tostop)
+    {
+        return { };
+    }
+
+    // Find path with least stops by using breadth first search.
+    PathEdge path_bfs = path_breadth_first_search(fromstop, tostop);
+
+    return make_journey_distance(path_bfs);
+}
+
+// Function returns a journey between the given stops that has a cycle.
+JourneyDistance Datastructures::journey_with_cycle(StopID fromstop)
+{
+    // Check if stop IDs are valid.
+    if (stop_list.find(fromstop) == stop_list.end())
+    {
+        return { {NO_STOP, NO_ROUTE, NO_DISTANCE} };
+    }
+
+    // Find path that contain cycle by depth first search with condition stops
+    // searching when found cycle.
+    PathEdge path_dfs = path_depth_first_search(fromstop);
+
+    return make_journey_distance(path_dfs);
+}
+
+// Function returns a journey between the given stops with the minimum total
+// distance.
+JourneyDistance Datastructures::journey_shortest_distance(StopID fromstop, StopID tostop)
+{
+    // Check if stop IDs are valid.
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return { {NO_STOP, NO_ROUTE, NO_DISTANCE} };
+    }
+
+    if (fromstop == tostop)
+    {
+        return { };
+    }
+
+    // Find journey with shortest distance travel by implementing Dijkstra
+    // algorithms with label on each stop is total distance needed to travel to
+    // reach that stop starting from source stop.
+    PathEdge path_shortest = shortest_path_distance(fromstop, tostop);
+
+    return make_journey_distance(path_shortest);
+}
+
+// Function adds trip to a given route.
+bool Datastructures::add_trip(RouteID routeid, std::vector<Time> const& stop_times)
+{
+    // Check if route ID is valid.
+    if (route_list.find(routeid) == route_list.end())
+    {
+        return false;
+    }
+
+    Trip add_trip;
+
+    // Trip ID contain the route ID of trip and the number denote the order
+    // the trip is added in the route.
+    TripID tripid = { routeid, (int) route_list.at(routeid).trip_list.size() };
+
+    for (unsigned int i = 0; i < stop_times.size(); ++i)
+    {
+        StopID curr_stop = route_list.at(routeid).stops_on_route.at(i);
+        Time depart_curr_stop = stop_times.at(i);
+
+        add_trip.timetable.insert({ curr_stop, depart_curr_stop });
+
+        // Adding time information between adjacent stops on a route.
+
+        // Adding edge go in a stop.
+        if (i > 0)
+        {
+            Time depart_prev_stop = stop_times.at(i - 1);
+
+            // Depart time to current stop is the same as arrival time
+            // to current stop.
+            TimeTravel time_info = std::make_pair(depart_prev_stop, depart_curr_stop);
+            std::pair<TripID, TimeTravel> bus_on_edge = std::make_pair(tripid, time_info);
+
+            stop_list.at(curr_stop).in_edges.at(routeid).bus_travel.push_back(bus_on_edge);
+        }
+
+        // Adding egde go out a stop.
+        if (i < stop_times.size() - 1)
+        {
+            Time depart_next_stop = stop_times.at(i + 1);
+
+            // Depart time to next stop is the same as arrival time to next stop.
+            TimeTravel time_info = std::make_pair(depart_curr_stop, depart_next_stop);
+            std::pair<TripID, TimeTravel> bus_on_edge = std::make_pair(tripid, time_info);
+
+            stop_list.at(curr_stop).out_edges.at(routeid).bus_travel.push_back(bus_on_edge);
+        }
+    }
+
+    // Adding trip to route list.
+    route_list.at(routeid).trip_list.push_back(add_trip);
+
+    return true;
+}
+
+// Functions returns info when buses on a given stop depart from the given
+// stop.
+std::vector<std::pair<Time, Duration>> Datastructures::route_times_from(RouteID routeid, StopID stopid)
+{
+    // Check if route ID and stop ID are valid.
+    if (route_list.find(routeid) == route_list.end() ||
+        stop_list.find(stopid) == stop_list.end())
+    {
+        return { {NO_TIME, NO_DURATION} };
+    }
+
+    bool route_has_stop = false;
+    Stop start_stop = stop_list.at(stopid);
+
+    // Check that the route has passed over the stop.
+    // This will not check that the stop is the first stop of the route so we
+    // meed the checking below.
+    for (auto it = start_stop.in_edges.begin(); it != start_stop.in_edges.end(); ++it)
+    {
+        if (it->first == routeid)
+        {
+            route_has_stop = true;
+            break;
+        }
+    }
+
+    // Check that the route has passed over the stop.
+    // This will not check that the stop is the last stop of the route so we
+    // need the checking above.
+    for (auto it = start_stop.out_edges.begin(); it != start_stop.out_edges.end(); ++it)
+    {
+        if (it->first == routeid)
+        {
+            route_has_stop = true;
+            break;
+        }
+    }
+
+    if (route_has_stop == false)
+    {
+        return { {NO_TIME, NO_DURATION} };
+    }
+
+    Route temp_route = route_list.at(routeid);
+
+    // Find next stop.
+    StopID next_stop = NO_STOP;
+    for (auto it = temp_route.stops_on_route.begin();
+        it != temp_route.stops_on_route.end(); ++it)
+    {
+        if (*it == stopid)
+        {
+            if (*it == temp_route.stops_on_route.back())
+            {
+                next_stop = NO_STOP;
+            }
+            else
+            {
+                next_stop = *(++it);
+                break;
+            }
+        }
+    }
+
+    if (next_stop == NO_STOP)
+    {
+        return { };
+    }
+
+    // Construct buses information depart from stop.
+    std::vector<std::pair<Time, Duration>> route_times;
+
+    for (unsigned int i = 0; i < temp_route.trip_list.size(); ++i)
+    {
+        Time start_time = temp_route.trip_list.at(i).timetable.at(stopid);
+        Time end_time = temp_route.trip_list.at(i).timetable.at(next_stop);
+
+        route_times.push_back(std::make_pair(start_time, end_time - start_time));
+    }
+
+    return route_times;
+}
+
+// Function returns a journey between the given stops with the earliest
+// possible arrival time.
+JourneyTime Datastructures::journey_earliest_arrival(StopID fromstop, StopID tostop, Time starttime)
+{
+    // Check if stop IDs are valid.
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return { {NO_STOP, NO_ROUTE, NO_TIME} };
+    }
+
+    if (fromstop == tostop)
+    {
+        return { };
+    }
+
+    // Find journey with earliest arrival by implementing Dijkstra algorithms
+    // with label used for each stop is the time arrival to that stop.
+    PathEdge path_soonest_arrival = shortest_path_duration(fromstop, tostop, starttime);
+
+    return make_journey_time(path_soonest_arrival, starttime);
+}
+
+// Adding walking connection from each stop to its five closest stops.
+void Datastructures::add_walking_connections()
+{
+    // Loop through all stops.
+    for (auto it_stop = stop_list.begin(); it_stop != stop_list.end(); ++it_stop)
+    {
+        StopID fromstop = it_stop->first;
+
+        // Finding 5 stops closest to a stop.
+        std::vector<StopID> stops_closest = stops_closest_to(it_stop->first);
+
+        // Adding connection to five nearest stop.
+        for (auto it_near = stops_closest.begin(); it_near != stops_closest.end();
+            ++it_near)
+        {
+            StopID tostop = *it_near;
+            // Route ID for walking path is NO_ROUTE.
+            Edge walking_path = make_edge_no_trip(fromstop, tostop, NO_ROUTE);
+
+            // Calculate walking time.
+            walking_path.walking_time = (int)(walking_path.dist / walking_speed);
+
+            stop_list.at(fromstop).walking_to.push_back(walking_path);
+        }
+    }
+}
+
+// Finding path path from source stop to target stop by implementing breadth
+// first search.
+PathEdge Datastructures::path_breadth_first_search(StopID fromstop, StopID tostop)
+{
+    // Check if stop IDs are valid.
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return { };
+    }
+
+    // Implementing breadth first search by using queue.
+    std::queue<std::pair<StopID, Edge>> searching_stop;
+    searching_stop.push(std::pair(fromstop, Edge()));
+
+    TravelHistory stop_visited;
+
+    while (searching_stop.size() != 0)
+    {
+        std::pair<StopID, Edge> current_stop = searching_stop.front();
+        stop_visited.insert({ current_stop.first, current_stop.second });
+
+        if (current_stop.first == tostop)
+        {
+            break;
+        }
+        else
+        {
+            searching_stop.pop();
+
+            // Loop through adjacent stop.
+            for (auto it_edge = stop_list.at(current_stop.first).out_edges.begin();
+                it_edge != stop_list.at(current_stop.first).out_edges.end(); ++it_edge)
+            {
+                // If not visit the stop.
+                if (stop_visited.find(it_edge->second.to_stop_ID) == stop_visited.end())
+                {
+                    searching_stop.push(std::make_pair(,it_edge->second.to_stop_ID, it_edge->second));
+                }
+            }
+        }
+    }
+
+    // There is no journey that connect source stop to target stop.
+    if (searching_stop.size() == 0)
+    {
+        return { };
+    }
+
+    return make_path(fromstop, tostop, stop_visited, false);
+}
+
+// Finding path with contains circle by implementing depth first search search.
+PathEdge Datastructures::path_depth_first_search(StopID fromstop)
+{
+    // Check if stop ID is valid.
+    if (stop_list.find(fromstop) == stop_list.end())
+    {
+        return { };
+    }
+
+    bool found_cycle = false;
+    StopID tostop;
+    // Last edge used for making path.
+    Edge last_edge;
+
+    // Implementing depth first search by using a stack.
+    std::stack<std::pair<StopID, Edge>> searching_stop;
+    searching_stop.push(std::make_pair(fromstop, Edge()));
+
+    // Storing stop with edges travel to that stop used later for making path.
+    TravelHistory visited_stop;
+
+    while (searching_stop.size() != 0 && !found_cycle)
+    {
+        std::pair<StopID, Edge> curr_stop = searching_stop.top();
+        visited_stop.insert({ curr_stop.first, curr_stop.second });
+
+        searching_stop.pop();
+
+        bool can_continue = false;
+        std::unordered_set<StopID> already_travel;
+
+        // Traversal all stop that can reach from current stop.
+        for (auto it_edge = stop_list.at(curr_stop.first).out_edges.begin();
+            it_edge != stop_list.at(curr_stop.first).out_edges.end(); ++it_edge)
+
+        {
+            // If the stop has not been added in travel history.
+            if (visited_stop.find(it_edge->second.to_stop_ID) ==
+                    visited_stop.end())
+            {
+                // And not visited by any other path.
+                if (already_travel.find(it_edge->second.to_stop_ID) ==
+                        already_travel.end())
+                {
+                    can_continue = true;
+                    already_travel.insert(it_edge->second.to_stop_ID);
+                    searching_stop.push(std::make_pair(it_edge->second.to_stop_ID,
+                                                       it_edge->second));
+                }
+            }
+            else
+            {
+                // If the stop has been visited.
+                if (visited_stop.size() > 1)
+                {
+                    can_continue = true;
+                    tostop = it_edge->second.to_stop_ID;
+                    last_edge = it_edge->second;
+                    found_cycle = true;
+                    break;
+                }
+            }
+        }
+
+        // Delete search information of edge travel to stop that does not lead
+        // to a cycle.
+        if (!can_continue)
+        {
+            visited_stop.erase(curr_stop.first);
+        }
+    }
+
+    if (!found_cycle)
+    {
+        return { };
+    }
+
+    return make_path(fromstop, tostop, visited_stop, true, last_edge);
+}
+
+// Function makes a journey with distance from startting stop up to a stop and
+// route to take to the next stop from current stop. Except for the last stop
+// with route ID is NO_ROUTE since the journey doesn't continue.
+JourneyDistance Datastructures::make_journey_distance(PathEdge path_by_edges)
+{
+    // Check if there is edge to make journey.
+    if (path_by_edges.size() == 0)
+    {
+        return { };
+    }
+
+    JourneyDistance jour_dist;
+
+    for (auto it_edge = path_by_edges.begin(); it_edge != path_by_edges.end();
+        ++it_edge)
+    {
+        // Added information.
+        StopID curr_stop = it_edge->from_stop_ID;
+        RouteID route_to_next_stop = it_edge->route_ID;
+        Distance dist_to_stop = 0;
+
+        // Calculation disatnce up to current stop.
+        if (it_edge != path_by_edges.begin())
+        {
+            dist_to_stop = std::get<2>(jour_dist.back()) + (--it_edge)->dist;
+            ++it_edge;
+        }
+
+        jour_dist.push_back(std::make_tuple(curr_stop, route_to_next_stop,
+            dist_to_stop));
+    }
+
+    auto it_last_edge = path_by_edges.back();
+
+    // Add information for the last stop.
+    Distance dist_to_stop = std::get<2>(jour_dist.back()) + it_last_edge.dist;
+    jour_dist.push_back(std::make_tuple(it_last_edge.to_stop_ID, NO_ROUTE,
+        dist_to_stop));
+
+    return jour_dist;
+}
+
+// Function makes a journey with departure time from each stop and route to
+// take to the next stop. Except for the last stop with time information is the
+// arrival time and route ID is NO_ROUTE since the journey doesn't continue.
+JourneyTime Datastructures::make_journey_time(PathEdge path_by_edges, Time starttime)
+{
+    // Check if there is edge to make journey.
+    if (path_by_edges.size() == 0)
+    {
+        return { };
+    }
+
+    // Adding time when have walking connection.
+
+    JourneyDistance jour_depart;
+
+    for (auto it_edge = path_by_edges.begin(); it_edge != path_by_edges.end();
+        ++it_edge)
+    {
+        StopID curr_stop = it_edge->from_stop_ID;
+        RouteID route_to_next_stop = it_edge->route_ID;
+        Time depart_from_stop;
+
+        // If this edge is going by walking.
+        if (route_to_next_stop == NO_ROUTE)
+        {
+            if (it_edge == path_by_edges.begin())
+            {
+                depart_from_stop = starttime;
+            }
+            else
+            {
+                // Walking to next stop immediatly arriving current stop.
+                // Calculate departure time that is the same as the departure
+                // time of previous stop and time walking from previous stop to
+                // current stop.
+
+                --it_edge;
+
+                if (it_edge->route_ID == NO_ROUTE)
+                {
+                    // Arrival time from walking.
+                    depart_from_stop = std::get<2>(jour_depart.back()) +
+                        it_edge->walking_time;
+                }
+                else
+                {
+                    // Arrival time of the bus.
+                    depart_from_stop = it_edge->bus_travel.front().second.second;
+                }
+
+                ++it_edge;
+            }
+        }
+        // If this edge is going by bus.
+        else
+        {
+            depart_from_stop = it_edge->bus_travel.front().second.first;
+        }
+
+        jour_depart.push_back(std::make_tuple(curr_stop, route_to_next_stop,
+            depart_from_stop));
+    }
+
+    // Add information for the last stop.
+    Edge last_edge = path_by_edges.back();
+    Time arrival_last_stop;
+
+    // If last edge is going by walking.
+    if (last_edge.route_ID == NO_ROUTE)
+    {
+        // Walking to next stop immediatly arriving current stop.
+        arrival_last_stop = std::get<2>(jour_depart.back()) + last_edge.walking_time;
+    }
+    else
+    {
+        // If this edge is going by bus.
+        // For illustration:
+        //                |Last edge|List of trip|Only | Time | Arrival|
+        //                |         | pass edge  |trip |travel| time   |
+        arrival_last_stop = last_edge.bus_travel.front().second.second;
+    }
+
+
+    jour_depart.push_back(std::make_tuple(last_edge.to_stop_ID, NO_ROUTE,
+        arrival_last_stop));
+
+    return jour_depart;
+}
+
+// Function implements Dijkstra algorithm for finding path with shortest
+// distance from source stop to target stop.
+PathEdge Datastructures::shortest_path_distance(StopID fromstop, StopID tostop)
+{
+    // Check if stop IDs are valid.
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return { };
+    }
+
+    if (fromstop == tostop)
+    {
+        return { };
+    }
+
+    // For storing shortest distance found.
+    Label stop_label;
+    stop_label.insert({ fromstop, 0 });
+
+    // For later traceback to construct journey information.
+    TravelHistory stop_visited;
+    stop_visited.insert({ fromstop, Edge() });
+
+    // For implementing priority - queue in Dijkstra algorithm with priority
+    // is the total distance travel up to current stop.
+    MinWeightHeap min_heap;
+    min_heap.push(std::make_pair(0, fromstop));
+
+    while (!min_heap.empty())
+    {
+        // Access min element.
+        StopID curr_stop = min_heap.top().second;
+
+        // Stop when found shortest path to target stop.
+        if (curr_stop == tostop)
+        {
+            break;
+        }
+
+        // Remove min element from priority queue.
+        min_heap.pop();
+
+        // Loop for all bus connection.
+        for (auto it_edge = stop_list.at(curr_stop).out_edges.begin();
+            it_edge != stop_list.at(curr_stop).out_edges.end(); ++it_edge)
+        {
+            Edge travel_edge = it_edge->second;
+            StopID next_stop = travel_edge.to_stop_ID;
+
+            // If stop was not found.
+            if (stop_visited.find(next_stop) == stop_visited.end())
+            {
+                // Adding new discover stop.
+                stop_label.insert({ next_stop, INF });
+
+                // Add edge the lead to this stop.
+                stop_visited.insert({ next_stop, travel_edge });
+
+                // Add stop to the priority queue.
+                min_heap.push(std::make_pair(INF, next_stop));
+            }
+
+            // Update label and the priority of stops in priority queue.
+            relax_distance(travel_edge, stop_label, stop_visited, min_heap);
+        }
+
+        // Loop for all walking connection.
+        for (auto it_edge = stop_list.at(curr_stop).walking_to.begin();
+            it_edge != stop_list.at(curr_stop).walking_to.end(); ++it_edge)
+        {
+            Edge travel_edge = *it_edge;
+            StopID next_stop = travel_edge.to_stop_ID;
+
+            // If stop was not found.
+            if (stop_visited.find(next_stop) == stop_visited.end())
+            {
+                // Adding new discover stop.
+                stop_label.insert({ next_stop, INF });
+
+                // Add edge the lead to this stop.
+                stop_visited.insert({ next_stop, travel_edge });
+            }
+
+            // Update label and the priority of stops in priority queue.
+            relax_distance(travel_edge, stop_label, stop_visited, min_heap);
+        }
+
+    }
+
+    // If there was no path between source stop and target stop.
+    if (min_heap.empty())
+    {
+        return { };
+    }
+
+    // Make path by edge from source stop to target stop with minimum total
+    // weight.
+    return make_path(fromstop, tostop, stop_visited, false);
+}
+
+// Function implements Dijkstra algorithms for finding path with shortest
+// duration since the startting time is fixed. The function used modify the
+// algorithm by using the label of stop is the arrival time to that stop and
+// some modification in relaxtion rule.
+PathEdge Datastructures::shortest_path_duration(StopID fromstop, StopID tostop,
+    Time starttime)
+{
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return { };
+    }
+
+    if (fromstop == tostop)
+    {
+        return { };
+    }
+
+    // For storing soonest arrival found.
+    Label stop_label;
+    stop_label.insert({ fromstop, starttime });
+
+    // For later traceback to construct journey information.
+    TravelHistory stop_visited;
+    stop_visited.insert({ fromstop, Edge() });
+
+    // For implementing priority - queue in Dijkstra algorithm with priority is
+    // the arrival time to stop
+    MinWeightHeap min_heap;
+    min_heap.push(std::make_pair(starttime, fromstop));
+
+    while (!min_heap.empty())
+    {
+        // Access min element.
+        StopID curr_stop = min_heap.top().second;
+        Time arrival_time = min_heap.top().first;
+
+        if (curr_stop == tostop)
+        {
+            break;
+        }
+
+        // Remove min element from priority queue.
+        min_heap.pop();
+
+        // Loop through all bus travel through the stop.
+        for (auto it_edge = stop_list.at(curr_stop).out_edges.begin();
+            it_edge != stop_list.at(curr_stop).out_edges.end(); ++it_edge)
+        {
+            // Loop for all possible bus.
+            for (auto it_bus = it_edge->second.bus_travel.begin();
+                it_bus != it_edge->second.bus_travel.end(); ++it_bus)
+            {
+                // If can catch up the bus.
+                if (arrival_time <= it_bus->second.first)
+                {
+                    // Add edge with only one time choice for later traceback.
+                    Edge travel_edge = it_edge->second;
+                    travel_edge.bus_travel = { *it_bus };
+
+                    StopID next_stop = it_edge->second.to_stop_ID;
+
+                    // If stop was not found.
+                    if (stop_visited.find(next_stop) == stop_visited.end())
+                    {
+                        // Adding new discover stop.
+                        stop_label.insert({ next_stop, INF });
+
+                        // Add stop with edge that lead to this stop.
+                        // stop_visited.insert({ next_stop, travel_edge });
+                        stop_visited.insert({ next_stop, travel_edge });
+                    }
+
+                    // Update label and the priority of stops in priority queue.
+                    relax_time(travel_edge, stop_label, stop_visited, min_heap);
+                }
+            }
+        }
+
+        // Loop through walking connection.
+        for (auto it_edge = stop_list.at(curr_stop).walking_to.begin();
+            it_edge != stop_list.at(curr_stop).walking_to.end(); ++it_edge)
+        {
+            Edge travel_edge = *it_edge;
+            StopID next_stop = travel_edge.to_stop_ID;
+
+            // If stop was not found.
+            if (stop_visited.find(next_stop) == stop_visited.end())
+            {
+                // Adding new discover stop.
+                stop_label.insert({ next_stop, INF });
+
+                // Add stop with edge that lead to this stop.
+                stop_visited.insert({ next_stop, travel_edge });
+            }
+
+            // Update label and the priority of stops in priority queue.
+            relax_time(travel_edge, stop_label, stop_visited, min_heap);
+        }
+    }
+
+    // If there was no path between source stop and target stop.
+    if (stop_visited.find(tostop) == stop_visited.end())
+    {
+        return { };
+    }
+
+    // Make path by edges from source stop to target stop with minimum total
+    // weight.
+    return find_path(fromstop, tostop, starttime, stop_label.at(tostop));
+}
+
+// Function make a path with edge traveled from source stop to target stop.
+// Parameter with_cycle and last_edge is used when with_cycle has value true
+// then function makes path that ends immediately when it contains circle with
+// the ending edge of the path is last_edge.
+PathEdge Datastructures::make_path(StopID fromstop, StopID tostop,
+    TravelHistory& stop_visited, bool with_cycle, Edge last_edge)
+{
+    PathEdge traceback_edges = { };
+    StopID trace_stop = tostop;
+
+    // Used by detect the cycle has been added into the created edge.
+    bool path_has_cycle = false;
+
+    if (with_cycle)
+    {
+        traceback_edges.push_back(last_edge);
+        trace_stop = last_edge.from_stop_ID;
+    }
+
+    do
+    {
+        Edge previous_edge = stop_visited.at(trace_stop);
+        traceback_edges.push_back(previous_edge);
+
+        trace_stop = previous_edge.from_stop_ID;
+
+        if (trace_stop == tostop)
+        {
+            path_has_cycle = true;
+        }
+
+        if (trace_stop == fromstop)
+        {
+            break;
+        }
+
+    } while (trace_stop != fromstop || (path_has_cycle == false && with_cycle));
+
+    std::reverse(traceback_edges.begin(), traceback_edges.end());
+    return traceback_edges;
+}
+
+// Function updates distance to the stop.
+void Datastructures::relax_distance(Edge connected_edge, Label& stop_label,
+    TravelHistory& stop_visited, MinWeightHeap& min_heap)
+{
+    // Get information from edge.
+    StopID fromstop = connected_edge.from_stop_ID;
+    StopID tostop = connected_edge.to_stop_ID;
+    Distance dist = connected_edge.dist;
+
+    if (stop_label.at(tostop) >
+        stop_label.at(fromstop) + dist)
+    {
+        stop_label.at(tostop) = stop_label.at(fromstop) + dist;
+
+        stop_visited.at(tostop) = connected_edge;
+
+        // Update priority of elements.
+        min_heap.push(std::make_pair(stop_label.at(tostop), tostop));
+    }
+}
+
+// Function updates the arrival time to the stop.
+void Datastructures::relax_time(Edge connected_edge, Label& stop_label,
+    TravelHistory& stop_visited, MinWeightHeap& min_heap)
+{
+    // Get information from edge.
+    StopID fromstop = connected_edge.from_stop_ID;
+    StopID tostop = connected_edge.to_stop_ID;
+
+    Time depart_curr_stop;
+    Time arrive_next_stop;
+
+    // If go by bus.
+    if (connected_edge.route_ID != NO_ROUTE)
+    {
+        depart_curr_stop = connected_edge.bus_travel.front().second.first;
+        arrive_next_stop = connected_edge.bus_travel.front().second.second;
+    }
+    else
+    {
+        // If go by walking.
+        depart_curr_stop = stop_label.at(fromstop);
+        arrive_next_stop = depart_curr_stop + connected_edge.walking_time;
+    }
+
+    // If after arriving source stop we can catch up the next bus.
+    if (stop_label.at(fromstop) <= depart_curr_stop)
+    {
+        // If going from stop 1 to stop 2 by connected edge make
+        // arriving sooner.
+        if (stop_label.at(tostop) > arrive_next_stop)
+        {
+            // Update current found soonest arrival time.
+            stop_label.at(tostop) = arrive_next_stop;
+
+            stop_visited.at(tostop) = connected_edge;
+
+            // Update priority of new arrival time to stop.
+            min_heap.push(std::make_pair(stop_label.at(tostop), tostop));
+        }
+    }
+}
+
+// Function makes and returns an directed edge from fromstop totstop with
+// information about route that connect two stops and distance between two
+// stops.
+Edge Datastructures::make_edge_no_trip(StopID fromstop, StopID tostop, RouteID id)
+{
+    if (stop_list.find(fromstop) == stop_list.end() ||
+        stop_list.find(tostop) == stop_list.end())
+    {
+        return Edge();
+    }
+
+    Coord location_fromstop = stop_list.at(fromstop).location;
+    Coord location_tostop = stop_list.at(tostop).location;
+
+    // Calculate distance between stops and round down to integer.
+    Distance dist = (int)std::sqrt(distance_square(location_fromstop,
+                                                   location_tostop));
+
+    Edge new_edge = { fromstop, tostop, id, dist, { } };
+
+    return new_edge;
+}
+
+bool Datastructures::change_bus(Edge next_edge, Edge prev_edge)
+{
+    // If previous travel and next travel are walking or go by bus on the same
+    // route.
+    if (prev_edge.route_ID == next_edge.route_ID)
+    {
+        // If not travel by walking or current stop is not the startting stop.
+        if (prev_edge.route_ID != NO_ROUTE)
+        {
+            TripID prev_index = prev_edge.bus_travel.front().first;
+            TripID next_index = next_edge.bus_travel.front().first;
+
+            // Not going on the same bus.
+            if (prev_index.trip_index != next_index.trip_index)
+            {
+                return true;;
+            }
+        }
+    }
+    else
+    {
+        // Change from walk to bus or from bus to walk or change from one bus
+        // to another bus.
+        return true;
+    }
+
+    return false;
+}
+
+PathEdge Datastructures::find_path(StopID fromstop, StopID tostop, Time starttime,
+                                   Time soonest_arrival_time)
+{
+    // Check if stop ID is valid.
+    if (stop_list.find(fromstop) == stop_list.end())
+    {
+        return { };
+    }
+
+    // Implementing depth first search by using a stack.
+    std::stack<std::pair<StopID, Edge>> searching_stop;
+    searching_stop.push(std::make_pair(fromstop, Edge()));
+
+    // Storing stop with edges travel to that stop used later for making path.
+    TravelHistory visited_stop;
+
+    Label stop_change_bus;
+    stop_change_bus.insert({ fromstop, 0});
+
+    int current_change_bus = INF;
+
+    TravelHistory temp_stop_visited;
+
+    while (searching_stop.size())
+    {
+        std::pair<StopID, Edge> curr_stop = searching_stop.top();
+
+
+        int change_times = 0;
+        if (curr_stop.first != fromstop)
+        {
+             StopID prev_stop = curr_stop.second.from_stop_ID;
+             change_times = stop_change_bus.at(prev_stop);
+             if (change_bus(visited_stop.at(curr_stop.second.from_stop_ID), curr_stop.second))
+             {
+                 change_times++;
+             }
+        }
+
+        searching_stop.pop();
+
+        if (change_times <= current_change_bus)
+        {
+            stop_change_bus.insert({curr_stop.first, change_times});
+            visited_stop.insert({ curr_stop.first, curr_stop.second });
+        }
+        else
+        {
+            continue;
+        }
+
+        if (curr_stop.first == tostop)
+        {
+            temp_stop_visited = visited_stop;
+            current_change_bus = stop_change_bus.at(curr_stop.first);
+            continue;
+        }
+
+        bool can_continue = false;
+
+        // Traversal all stop that can reach from current stop.
+        for (auto it_edge = stop_list.at(curr_stop.first).out_edges.begin();
+            it_edge != stop_list.at(curr_stop.first).out_edges.end(); ++it_edge)
+
+        {
+            Time arrive_time_current_stop;
+            if (curr_stop.first == fromstop)
+            {
+                arrive_time_current_stop = starttime;
+            }
+            else
+            {
+                arrive_time_current_stop = visited_stop.at(curr_stop.first).bus_travel.front().second.second;
+            }
+
+
+            for (auto it_bus = it_edge->second.bus_travel.begin();
+                 it_bus != it_edge->second.bus_travel.end(); ++it_bus)
+            {
+
+                if (it_bus->second.first >= arrive_time_current_stop &&
+                    it_bus->second.second <= soonest_arrival_time)
+                {
+
+                    Edge temp_edge = it_edge->second;
+                    temp_edge.bus_travel = { *it_bus };
+                    // If the stop has not been added in travel history.
+
+                    searching_stop.push(std::make_pair(temp_edge.to_stop_ID,
+                                                           temp_edge));
+                    can_continue = true;
+                }
+            }
+        }
+
+        if (!can_continue)
+        {
+            visited_stop.erase(curr_stop.first);
+            stop_change_bus.erase(curr_stop.first);
+        }
+    }
+
+    if (temp_stop_visited.find(tostop) == temp_stop_visited.end())
+    {
+        return { };
+    }
+
+    return make_path(fromstop, tostop, temp_stop_visited, false);
+}

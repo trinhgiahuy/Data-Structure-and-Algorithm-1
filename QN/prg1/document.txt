@@ -1,0 +1,171 @@
+NOTE.
+
+When writing the asymtotic in this document or in the comment of the code, the notation big theta
+are written as O() since it is more convenient to use the letter 'O' instead of letter theta. Then
+when the worst case notation is mentioned, the document and the comment will write it clear. 
+
+Name of variable written in this document is put in the "".
+
+The performance results in column "cmd" also includes the running time of creation_finished().
+
+1. CHOOSING DATA STRUCTURE FOR STOP AND REGION.
+
+1.1. STRUCT OF STOP
+
+The program represents a stop by using struct with name "Stop" and data member:
+      
+	+ "id" : A string. It represents the unique ID of each stops. The information most used for
+		 identify the stop, searching the stop,...
+	
+	+ "stop_name" : is a string. It represents the name of each stops, that is not unique.
+	
+	+ "location" : has "coord" type. It represents the coordinate of each stop as a point with integer
+		       coordinates of an Cartesian coordiantes. The word "location" is choose to avoid collision
+		       with the word "coord".
+	
+	+ "regionID" : is a string. It represents the ID of the region that a stop belong to. Each stop
+		       can belong to only one region.
+
+Pointer to parent and subregion of each region allows other function process the "region_list" as a tree.
+
+1.2. STRUCT OF REGION
+
+The program represents a region 
+
+	+ "id" : is a string. It represents the unique ID of each region. The information is most used for
+		 indenty the region.
+	
+	+ "region_name" : is a string. It represents the name of each region.
+	
+	+ " parent" : has pointer to region type. "parent" points to one region that contains directly the
+		      current region.
+	
+	+ "children" : is a vector of pointer to region. "childrent" contains pointers to its directly
+		       subregions.
+
+
+2. CHOOSING IMPLEMENTATION OF CLASS "Datastructures"
+
+2.1. DATA MEMBER OF CLASS "Datastructures"
+
+Datastructures class has private date members:
+
+	+ "stop_list" : an unordered map with key is "StopID" and value is "Stop". The stops element in
+			this Program are stored in unordered map since it is most suitable to access to the stop by the
+			ID of the stop which is unique. The unordered structure is chosen since there is no necessary to
+			sort the stop by their ID, so by using the unrordered map, operation of acessing, adding,
+			removing, searching element is faster compare to ordered map.
+
+	+ "region_list" : is unordered map with key is "RegionID" and value is "Region". The reason for
+			  choosing unordered map to store the regions is the same as choosing unordered map to store
+			  stops.
+
+	+ "create_finished" : is an boolean. It is used for determince the status of the program. Since
+			      after most stops are added, creation_finished() function is called and then stops are
+			      seldom add then some function will change their implentation "creation_finished" has
+			      initialize value "false" and its value is changed only by clear_all with set it to
+			      initialize value and creation_finished() with set it to "true" after doing all works in
+			      the function. "creation_finished" is called by many function.
+
+	+ "stop_name_order" : is an ordered map with key is "Name" of "Stop" and value is vector contains
+			      poiters to "Stop". "stop_name_order" is created as an empty map. When creation_finished()
+			      is called, stops information are added to it and after that, when new stop is add, the
+			      information of new stop will be updated in "stop_name_order". Data is most used for get
+			      the stops in the alphabetical of their name.
+
+	+ "stop_coord_order" : is an ordered map with key is "Coord" of "Stop" and value is vector
+			       contains pointers to "Stop". The reason for choosing ordered map data structure is
+			       similar to the reason ordered map for "stop_name_orderd". Data is most used for get the
+			       stops in coordinates order and get the maximum and minimum of stops coordinates.
+
+
+2.2 CHOOSING IMPLEMENTING OF PUBLIC MEMBER FUNCTION
+
+In the instruction document, the fact that when the program has something liked two state. In
+the first state, the main work of program is adding new stops and regions, assign stops to regions,
+add subregion to region. Later, after adding most stops, regions and their relation, the program
+mostly start to call other function instead of adding new stop, regions.
+
+Base on that reason, this program use create_finish data member and public method
+creation_finished() of class Datastructures function to choose the implementation that increase the
+performance of the add functionality. Then after most stop is added, determined by calling
+creation_finished(), the program chooses the implementation that decrease the performance of add
+functionality and increase the other functionality that need the order of stop in name order, or
+coordinates order such as max, min, or return list of stop in name of alphabetically order, or in
+coordinates order. For more detail, after calling creation_finished(), the program does more work
+in keeping order of stop in name order and in coordinates order.
+
+
+3. SUMMARY ON PERFORMANCE OF FUNCTION.
+
+Here are some notation used for writing asymtotic notation in this document and in the program code.
+
+	n : number of stops in the data structure.
+	n_name : average number of stops with the same name. By considering the offered test, value of
+		 n_name is around 1 to 2.
+	n_coord : average nuumber of stops with the same coordinates. By considering the offered test,
+		  value of n_coord is around 1.
+	m : number of regions in the data structure. By considering the offered test, the value of m is
+	    is around n, or in situation n is large, then m is very small compare to n.
+
+				Table for performance of function
+
+____________________________________________________________________________________________________.
+Command			      |				Performance				    | 
+			      |	____________________________________________________________________|
+Public member function	      |				       |				    |
+			      |Before call creation_finished() | After call creation_finished()	    |
+______________________________|________________________________|____________________________________|
+stop_count()		      |		      O(1)	       |	       O(1)		    |
+______________________________|________________________________|____________________________________|
+clear_all()		      |		      O(n)	       |	       O(n)		    |
+______________________________|________________________________|____________________________________|
+all_stop()		      |		      O(n)	       |	       O(n)		    |			
+______________________________|________________________________|____________________________________|
+get_stop_name()		      |		      O(1)	       |	       O(1)		    |
+______________________________|________________________________|____________________________________|
+get_stop_coord()	      |		      O(1)	       |	       O(1)		    |
+______________________________|________________________________|____________________________________|
+stops_alphabetically()	      |		     O(nlog(n))	       |	       O(n)		    |
+______________________________|________________________________|____________________________________|
+stops_coord_order()	      |		     O(nlog(n))	       |	       O(n)		    |
+______________________________|________________________________|____________________________________|
+min_coord()		      |		      O(n)	       |	       O(1)		    |
+______________________________|________________________________|____________________________________|
+max_coord()		      |		      O(n)	       |	       O(1)		    |
+______________________________|________________________________|____________________________________|
+find_stops()		      |		      O(n)	       |	  Worst case O(n)	    |
+______________________________|________________________________|____________________________________|
+change_stop_name()	      |		      O(1)	       |	O(max(log(n), N_name)	    |
+______________________________|________________________________|____________________________________|
+change_stop_coord()	      |		      O(1)	       |	O(max(log(n), N_stop)	    |
+______________________________|________________________________|____________________________________|
+add_region()		      |		      O(1)	       |		O(1)  		    |
+______________________________|________________________________|____________________________________|
+get_region_name()	      |		      O(1)	       |		O(1)	    	    |
+______________________________|________________________________|____________________________________|
+all_region()		      |		      O(m)	       |		O(m)		    |
+______________________________|________________________________|____________________________________|
+add_stop_to_region()	      |		      O(1)	       |		O(1)		    |
+______________________________|________________________________|____________________________________|
+add_subregion_to_region()     |		      O(1)	       |		O(1)		    |
+______________________________|________________________________|____________________________________|
+stop_regions()		      |		      O(m)	       |		O(m)		    |
+______________________________|________________________________|____________________________________|
+creation_finished()	      |		    		   O(nlog(n))				    |
+______________________________|_____________________________________________________________________|
+stop_closest_to()	      |		      O(n)	       |		O(n)		    |
+______________________________|________________________________|____________________________________|
+remove_stop()		      |		      O(m)	       | O(max(m, log(n), n_name, n_coord)) |
+______________________________|________________________________|____________________________________|
+region_bouding_box()	      |		Worst case O(mn)       |	Worst case O(mn)	    |
+______________________________|________________________________|____________________________________|
+stops_common_region()	      |		      O(m)	       |		O(m)		    |
+______________________________|________________________________|____________________________________|
+euclidean_distance()	      |		      O(1)	       |		O(1)		    |
+______________________________|________________________________|____________________________________|
+update_bounding_box()	      |		      O(1)	       |		O(1)		    |
+______________________________|________________________________|____________________________________|
+region_traversal()	      |		Worst case O(mn)       |	   Worst case O(mn)	    |
+______________________________|________________________________|____________________________________|
+			
